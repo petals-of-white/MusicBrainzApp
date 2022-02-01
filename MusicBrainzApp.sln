@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzConsoleApp", "Mu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBrainzEntitiesLibrary", "MusicBrainzEntitiesLibrary\MusicBrainzEntitiesLibrary.csproj", "{5D6F8C45-4E91-4251-9BA7-B0D81EE82488}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBrainzTestLibrary", "MusicBrainzTestLibrary\MusicBrainzTestLibrary.csproj", "{AD9B0F40-F949-45E6-BD12-2E927DC11F20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5D6F8C45-4E91-4251-9BA7-B0D81EE82488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D6F8C45-4E91-4251-9BA7-B0D81EE82488}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D6F8C45-4E91-4251-9BA7-B0D81EE82488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
