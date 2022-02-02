@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using MusicBrainzConsoleApp.Logging;
+
+LoggerBase fileLogger = LoggerFactory.CreateFileLogger("text.txt");
+LoggerBase consoleLogger = LoggerFactory.CreateConsoleLogger();
+
+
+consoleLogger.Log("test");
+fileLogger.Log("test");
