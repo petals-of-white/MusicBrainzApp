@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace MusicBrainzConsoleApp.Logging
+namespace LogLibrary
 {
     public class FileLogger : LoggerBase
     {

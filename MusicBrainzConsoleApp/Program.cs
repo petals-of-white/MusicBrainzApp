@@ -1,4 +1,4 @@
-﻿using MusicBrainzConsoleApp.Logging;
+﻿using LogLibrary;
 
 LoggerBase fileLogger = LoggerFactory.CreateFileLogger("text.txt");
 LoggerBase consoleLogger = LoggerFactory.CreateConsoleLogger();

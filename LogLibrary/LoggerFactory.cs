@@ -1,5 +1,8 @@
-﻿namespace MusicBrainzConsoleApp.Logging
+﻿namespace LogLibrary
 {
+    /// <summary>
+    /// Use the LoggerFactory to create an instance of a logger.
+    /// </summary>
     public static class LoggerFactory
     {
         public static LoggerBase CreateFileLogger(string filePath)

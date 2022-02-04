@@ -1,4 +1,4 @@
-﻿namespace MusicBrainzConsoleApp.Logging
+﻿namespace LogLibrary
 {
     public class DBLogger : LoggerBase
     {
