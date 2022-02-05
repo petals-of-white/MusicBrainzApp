@@ -1,8 +1,16 @@
-﻿using LogLibrary;
-
-LoggerBase fileLogger = LoggerFactory.CreateFileLogger("text.txt");
-LoggerBase consoleLogger = LoggerFactory.CreateConsoleLogger();
+﻿using MusicBrainzConsoleApp;
 
 
-consoleLogger.Log("test");
-fileLogger.Log("test");
+UserMessages.GreetUser();
+
+UserMessages.ShowAllTablesAndNumberOfRecords();
+
+UserMessages.PromptSelect();
+
+UserMessages.AskForPagination();
+
+UserMessages.ConfirmResult();
+
+UserMessages.SayGoodbye();
+
+Console.ReadKey();

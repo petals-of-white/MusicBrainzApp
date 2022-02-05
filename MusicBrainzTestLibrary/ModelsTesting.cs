@@ -1,8 +1,8 @@
-using Xunit;
-using MusicBrainzEntitiesLibrary.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using MusicBrainzDataAcessLibrary.Entities;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace MusicBrainzTestLibrary
@@ -27,12 +27,12 @@ namespace MusicBrainzTestLibrary
 
             var isValid = Validator.TryValidateObject(model, context, results);
 
-            
 
-            foreach(ValidationResult result in results)
+
+            foreach (ValidationResult result in results)
             {
                 output.WriteLine(result.ErrorMessage);
-                
+
             }
 
             Assert.False(isValid);
@@ -48,7 +48,7 @@ namespace MusicBrainzTestLibrary
             new object[]{ new Release {Name="SuperRelase",} },
             new object[]{ new ReleaseGroup {Name="Groupy Group", EditsPending=-10 } },
             new object[]{ new Work {} },
-            new object[]{ new Place { Id=128, Comment="Marvellous", Coordinates="1231243325o4fash" } },
+            new object[]{ new Place { Id=128, Comment="Marvellous" } },
             new object[]{ new Label {Comment="Goodo", SortName="Interesting"} },
             new object[]{ new Url  {LastUpdated=DateTime.Now,  } },
         };

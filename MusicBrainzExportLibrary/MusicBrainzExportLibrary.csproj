@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj" />
+    <ProjectReference Include="..\MusicBrainzDataAcessLibrary\MusicBrainzDataAcessLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

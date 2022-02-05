@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
-namespace MusicBrainzEntitiesLibrary.Models
+namespace MusicBrainzDataAcessLibrary.Entities
 {
     public class Place
     {
@@ -19,9 +18,9 @@ namespace MusicBrainzEntitiesLibrary.Models
         public string Address { get; set; } = "";
 
         public Area? Area { get; set; }
-
         //Think of coordinates validation
         public string Coordinates { get; set; }
+        //public SqlGeography Coordinates { get; set; }
 
         [Required]
         [MaxLength(255)]

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicBrainzEntitiesLibrary.Models
+namespace MusicBrainzDataAcessLibrary.Entities
 {
-    public class Url
+    public class ReleaseGroup
     {
         [Key]
         public int Id { get; set; }
@@ -11,8 +11,16 @@ namespace MusicBrainzEntitiesLibrary.Models
         // public string Gid { get; set; }
 
         [Required]
-        [Url]
-        public string UrlValue { get; set; }
+        public string Name { get; set; }
+
+        //[Required]
+        //public ArtistCredit ArtistCredit { get; set; }
+
+        //public ReleaseGroupType Type { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Comment { get; set; } = "";
 
         [Required]
         [Range(0, int.MaxValue)]

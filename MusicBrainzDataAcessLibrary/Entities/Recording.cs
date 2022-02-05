@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicBrainzEntitiesLibrary.Models
+namespace MusicBrainzDataAcessLibrary.Entities
 {
-    public class Work
+    public class Recording
     {
         [Key]
         public int Id { get; set; }
@@ -13,7 +13,13 @@ namespace MusicBrainzEntitiesLibrary.Models
         [Required]
         public string Name { get; set; }
 
-        //public WorkType Type { get; set; }
+        //[Required]
+        //public ArtistCredit ArtistCredit { get; set; }
+        [Range(minimum: 0, maximum: int.MaxValue)]
+        public int? Length { get; set; }
+
+        [Required]
+        public bool Video { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -23,10 +29,7 @@ namespace MusicBrainzEntitiesLibrary.Models
         [Range(0, int.MaxValue)]
         public int EditsPending { get; set; }
 
+
         public DateTime? LastUpdated { get; set; }
-
-
-        // Not sure if I should add this one. Need to think it through.
-        //public Language Language { get; set; }
     }
 }

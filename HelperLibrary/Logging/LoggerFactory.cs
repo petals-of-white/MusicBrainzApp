@@ -1,4 +1,4 @@
-﻿namespace LogLibrary
+﻿namespace HelperLibrary.Logging
 {
     /// <summary>
     /// Use the LoggerFactory to create an instance of a logger.

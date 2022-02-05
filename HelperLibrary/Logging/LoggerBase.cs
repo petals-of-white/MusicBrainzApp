@@ -1,4 +1,4 @@
-﻿namespace LogLibrary
+﻿namespace HelperLibrary.Logging
 {
     public abstract class LoggerBase
     {

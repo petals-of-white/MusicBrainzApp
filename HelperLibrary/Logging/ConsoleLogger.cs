@@ -1,4 +1,4 @@
-﻿namespace LogLibrary
+﻿namespace HelperLibrary.Logging
 {
     public class ConsoleLogger : LoggerBase
     {

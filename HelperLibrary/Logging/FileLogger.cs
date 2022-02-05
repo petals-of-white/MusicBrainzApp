@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace LogLibrary
+namespace HelperLibrary.Logging
 {
     public class FileLogger : LoggerBase
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicBrainzEntitiesLibrary.Models
+namespace MusicBrainzDataAcessLibrary.Entities
 {
     public class Label
     {
