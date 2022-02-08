@@ -1,6 +1,6 @@
-﻿namespace MusicBrainzExportLibrary.Tables
+﻿namespace MusicBrainzModelsLibrary.Tables
 {
-    public struct Table : ITable
+    public class Table : ITable
     {
         public string Name { get; set; }
 

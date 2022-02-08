@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace MusicBrainzExportLibrary.Exporting
 {
-    public interface ITableExporterBuilder: ITableUsable
+    /// <summary>
+    /// Represents an exporter
+    /// </summary>
+    public interface IExporter
     {
-        ITableExporter Build();
+        void Export();
     }
-
 }

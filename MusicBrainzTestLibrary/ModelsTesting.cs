@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using MusicBrainzDataAcessLibrary.Entities;
+
+using MusicBrainzModelsLibrary.Entities;
+
 using Xunit;
 using Xunit.Abstractions;
 

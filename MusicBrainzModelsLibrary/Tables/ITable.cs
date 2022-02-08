@@ -1,4 +1,4 @@
-﻿namespace MusicBrainzExportLibrary.Tables
+﻿namespace MusicBrainzModelsLibrary.Tables
 {
     public interface ITable
     {

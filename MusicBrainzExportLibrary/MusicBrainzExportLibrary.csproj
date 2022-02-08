@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj" />
     <ProjectReference Include="..\MusicBrainzDataAcessLibrary\MusicBrainzDataAcessLibrary.csproj" />
+    <ProjectReference Include="..\MusicBrainzModelsLibrary\MusicBrainzModelsLibrary.csproj" />
   </ItemGroup>
 
 </Project>

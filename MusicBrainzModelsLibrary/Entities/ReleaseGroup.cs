@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicBrainzDataAcessLibrary.Entities
+namespace MusicBrainzModelsLibrary.Entities
 {
-    public class Release
+    public class ReleaseGroup
     {
         [Key]
         public int Id { get; set; }
@@ -13,19 +13,10 @@ namespace MusicBrainzDataAcessLibrary.Entities
         [Required]
         public string Name { get; set; }
 
-        [Required]
-        public ReleaseGroup ReleaseGroup { get; set; }
-
         //[Required]
         //public ArtistCredit ArtistCredit { get; set; }
 
-        [MaxLength(255)]
-        public string? Barcode { get; set; }
-
-        //public Status? Status { get; set; }
-        //public Packaging? Status { get; set; }
-        //public Language? Language { get; set; }
-        //public Script? Script { get; set; }
+        //public ReleaseGroupType Type { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -35,8 +26,7 @@ namespace MusicBrainzDataAcessLibrary.Entities
         [Range(0, int.MaxValue)]
         public int EditsPending { get; set; }
 
-        [Required]
-        public short Quality { get; set; } = -1;
+
         public DateTime? LastUpdated { get; set; }
     }
 }

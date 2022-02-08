@@ -1,14 +1,12 @@
-﻿using MusicBrainzExportLibrary.Tables;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MusicBrainzExportLibrary.Exporting
 {
-    public interface ITableExporter
+    public interface ITableExporter: IExporter, ITableSelector
     {
-        IDictionary<int, ITable> TablesInfo { get; }
-        IList<ITable> SelectedTables { get; }
-        int? PageNumber { get; }
-        bool PaginationEnabled { get; }
-        int? RecordsPerPage { get; }
-        void Export();
     }
 }

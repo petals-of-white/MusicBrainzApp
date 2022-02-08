@@ -1,5 +1,6 @@
 ﻿using System.Data;
-using MusicBrainzDataAcessLibrary.Entities;
+using MusicBrainzModelsLibrary.Entities;
+using MusicBrainzModelsLibrary.Tables;
 
 namespace MusicBrainzDataAcessLibrary
 {
@@ -51,50 +52,49 @@ namespace MusicBrainzDataAcessLibrary
         }
 
 
-        public DataTable GetTablesInfo()
+        public IList<ITable> GetTablesInfo()
         {
 
             string sql = @"USE MusicBrainz;
                             SELECT
-                               number = ROW_NUMBER() OVER (
+                               # = ROW_NUMBER() OVER (
                             ORDER BY
                                t.TABLE_NAME),
-                               t.TABLE_NAME 
+                               t.TABLE_NAME as Name
                             FROM
-                               INFORMATION_SCHEMA.TABLES t 
+                               INFORMATION_SCHEMA.TABLES t
                             WHERE
-                               TABLE_TYPE = 'BASE TABLE' 
+                               TABLE_TYPE = 'BASE TABLE'
+                               AND t.TABLE_NAME != 'sysdiagrams'
                             Order by
                                t.TABLE_NAME;";
-
 
             DataTable tablesInfo = GetQueryResult(sql);
 
             DataTable tableInfoWithNumberOfRows = tablesInfo.Clone();
 
-            tableInfoWithNumberOfRows.Columns.Add("Rows", typeof(string));
+            tableInfoWithNumberOfRows.Columns.Add("NumberOfRecords", typeof(string));
 
-            var output = new Dictionary<int, (string TableName, int NumberOfRows)>();
 
-            int i = 1;
             foreach (DataRow row in tablesInfo.Rows)
             {
-                int tableNumber = i;
+                int tableNumber = Convert.ToInt32( row[0]);
                 string tableName = (string) row [1];
                 int numberOfRows = GetNumberOfRows(tableName);
 
                 tableInfoWithNumberOfRows.Rows.Add(tableNumber, tableName, numberOfRows);
-
-                //output.Add(tableNumber, (tableName, numberOfRows));
-
-                ++i;
             }
 
-            //return output;
-            return tableInfoWithNumberOfRows;
+            IList<ITable> outputList = new List<ITable>();
+
+            foreach(DataRow row in tableInfoWithNumberOfRows.Rows)
+            {
+                outputList.Add(row.ToObject<Table>());
+            }
+
+            return outputList;
 
         }
-
 
         public IEnumerable<object> GetTableRecords(string tableName)
         {
@@ -236,8 +236,6 @@ namespace MusicBrainzDataAcessLibrary
 
                         mappedRow [propertyName] = foreignRecord;
 
-
-
                     }
 
                     else
@@ -251,16 +249,14 @@ namespace MusicBrainzDataAcessLibrary
 
             }
 
-
-
             foreach (DataRow mappedRow in mappedOutput.Rows)
             {
                 entitiesList.Add(mappedRow.ToObject<T>());
             }
 
+
+
             return entitiesList;
-
-
         }
 
     }

@@ -1,5 +1,8 @@
-﻿using MusicBrainzDataAcessLibrary;
-using MusicBrainzDataAcessLibrary.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MusicBrainzDataAcessLibrary;
+using MusicBrainzModelsLibrary.Entities;
+using MusicBrainzModelsLibrary.Tables;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,6 +26,30 @@ namespace MusicBrainzTestLibrary
             Assert.True(true);
         }
 
+        [Fact]
+        public void GetTablesInfo_ReturnsCompleteInfo()
+        {
+            DBAccess db = new();
+
+            IList<ITable> tableInfo = db.GetTablesInfo();
+
+            bool propertiesDontContainNulls = tableInfo.Select(x => new object [] { x.Name, x.NumberOfRecords }).All(properties => properties.Contains(null) == false);
+
+            Assert.NotEmpty(tableInfo);
+
+            Assert.True(propertiesDontContainNulls);
+            
+            foreach(var table in tableInfo)
+            {
+                output.WriteLine($"{table.Name}, {table.NumberOfRecords}");
+            }
+            
+            
+
+
+
+
+        }
         [Fact]
         public void GetTableRecordsWithSimpleEntities_ShouldWork()
         {

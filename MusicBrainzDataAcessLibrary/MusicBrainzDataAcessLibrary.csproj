@@ -12,6 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj" />
+    <ProjectReference Include="..\MusicBrainzModelsLibrary\MusicBrainzModelsLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
       <HintPath>..\..\..\..\..\..\Program Files\Microsoft SQL Server\150\DTS\Extensions\Common\Microsoft.SqlServer.Types.dll</HintPath>
       <CopyLocal>True</CopyLocal>

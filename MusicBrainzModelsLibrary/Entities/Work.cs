@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicBrainzDataAcessLibrary.Entities
+namespace MusicBrainzModelsLibrary.Entities
 {
     public class Work
     {

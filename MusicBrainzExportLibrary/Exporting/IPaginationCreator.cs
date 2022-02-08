@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MusicBrainzExportLibrary.Exporting
 {
-    public interface ITableExporterBuilder: ITableUsable
+    public interface IPaginationCreator
     {
-        ITableExporter Build();
+        void EnablePagination(int recordsPerPage, int pageNumber);
+        void DisablePagination();
     }
-
 }

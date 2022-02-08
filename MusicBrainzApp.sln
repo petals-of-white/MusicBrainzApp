@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelperLibrary", "HelperLibr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzExportLibrary", "MusicBrainzExportLibrary\MusicBrainzExportLibrary.csproj", "{D384EA16-AD6C-44D3-83D9-59E708163DA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBrainzModelsLibrary", "MusicBrainzModelsLibrary\MusicBrainzModelsLibrary.csproj", "{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

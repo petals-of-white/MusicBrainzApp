@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace MusicBrainzDataAcessLibrary
 {
-    internal static class RowToObjectConverter
+    public static class RowToObjectConverter
     {
         public static T ToObject<T>(this DataRow dataRow) where T : new()
         {
