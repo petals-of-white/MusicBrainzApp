@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using HelperLibrary.Logging;
 using MusicBrainzModelsLibrary.Entities;
 using MusicBrainzModelsLibrary.Tables;
 
@@ -6,6 +7,8 @@ namespace MusicBrainzDataAcessLibrary
 {
     public class DBAccess : DBAccessBase
     {
+
+
         private readonly HashSet<Type> _allTypes = new()
         {
             typeof(Area),
@@ -18,6 +21,7 @@ namespace MusicBrainzDataAcessLibrary
             typeof(Url),
             typeof(Place),
         };
+
 
         public int GetNumberOfRows(string tableName)
         {
@@ -36,14 +40,16 @@ namespace MusicBrainzDataAcessLibrary
 
             }
 
-            catch (DeletedRowInaccessibleException)
+            catch (DeletedRowInaccessibleException ex)
             {
                 // log here
+                _logger.Log(ex.ToString());
                 throw;
             }
-            catch (IndexOutOfRangeException)
+            catch (IndexOutOfRangeException ex)
             {
                 // log here
+                _logger.Log(ex.ToString());
                 throw;
             }
 

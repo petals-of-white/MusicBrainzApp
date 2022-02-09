@@ -3,8 +3,8 @@
     /// <summary>
     /// Use the LoggerFactory to create an instance of a logger.
     /// </summary>
-    public abstract class LoggerFactory
+    public class DBLoggerFactory : LoggerFactory
     {
-        public abstract LoggerBase CreateLogger();
+        public override LoggerBase CreateLogger() => throw new NotImplementedException();
     }
 }
