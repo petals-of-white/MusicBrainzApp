@@ -34,44 +34,96 @@ namespace MusicBrainzExportLibrary.Exporting
 
             var tableOption = Enum.Parse(typeof(AvailableTables), table.Name);
 
-            switch (tableOption)
+            switch (PaginationEnabled)
             {
-                case AvailableTables.Area:
-                    entities = _db.GetTableRecords<Area>();
+                case true:
+
+                    switch (tableOption)
+                    {
+                        case AvailableTables.Area:
+                            entities = _db.GetTableRecords<Area>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Artist:
+                            entities = _db.GetTableRecords<Artist>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Label:
+                            entities = _db.GetTableRecords<Label>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Place:
+                            entities = _db.GetTableRecords<Place>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Recording:
+                            entities = _db.GetTableRecords<Recording>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Release:
+                            entities = _db.GetTableRecords<Release>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.ReleaseGroup:
+                            entities = _db.GetTableRecords<ReleaseGroup>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Url:
+                            entities = _db.GetTableRecords<Url>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+
+                        case AvailableTables.Work:
+                            entities = _db.GetTableRecords<Work>(RecordsPerPage.Value, PageNumber.Value);
+                            break;
+                    }
+
                     break;
 
-                case AvailableTables.Artist:
-                    entities = _db.GetTableRecords<Artist>();
-                    break;
+                case false:
 
-                case AvailableTables.Label:
-                    entities = _db.GetTableRecords<Label>();
-                    break;
+                    switch (tableOption)
+                    {
+                        case AvailableTables.Area:
+                            entities = _db.GetTableRecords<Area>();
+                            break;
 
-                case AvailableTables.Place:
-                    entities = _db.GetTableRecords<Place>();
-                    break;
+                        case AvailableTables.Artist:
+                            entities = _db.GetTableRecords<Artist>();
+                            break;
 
-                case AvailableTables.Recording:
-                    entities = _db.GetTableRecords<Recording>();
-                    break;
+                        case AvailableTables.Label:
+                            entities = _db.GetTableRecords<Label>();
+                            break;
 
-                case AvailableTables.Release:
-                    entities = _db.GetTableRecords<Release>();
-                    break;
+                        case AvailableTables.Place:
+                            entities = _db.GetTableRecords<Place>();
+                            break;
 
-                case AvailableTables.ReleaseGroup:
-                    entities = _db.GetTableRecords<ReleaseGroup>();
-                    break;
+                        case AvailableTables.Recording:
+                            entities = _db.GetTableRecords<Recording>();
+                            break;
 
-                case AvailableTables.Url:
-                    entities = _db.GetTableRecords<Url>();
-                    break;
+                        case AvailableTables.Release:
+                            entities = _db.GetTableRecords<Release>();
+                            break;
 
-                case AvailableTables.Work:
-                    entities = _db.GetTableRecords<Work>();
+                        case AvailableTables.ReleaseGroup:
+                            entities = _db.GetTableRecords<ReleaseGroup>();
+                            break;
+
+                        case AvailableTables.Url:
+                            entities = _db.GetTableRecords<Url>();
+                            break;
+
+                        case AvailableTables.Work:
+                            entities = _db.GetTableRecords<Work>();
+                            break;
+                    }
+                    
                     break;
             }
+
+            
             return entities;
         }
 

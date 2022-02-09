@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using System.Diagnostics;
+﻿using System.IO;
 using MusicBrainzExportLibrary.Exporting;
-using System.IO;
+using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
-using System.Reflection;
 
 namespace MusicBrainzTestLibrary
 {
@@ -35,19 +27,20 @@ namespace MusicBrainzTestLibrary
         [InlineData("Url")]
         [InlineData("Work")]
         //[TestBeforeAfter]
-        
+
         public void ExportOneTableToJson_ShouldNotBeEmpty(string tableName)
         {
             TableToJsonExporterBuilder builder = new();
 
             builder.UseTable(tableName);
-          
-            var exporter = (TableToJsonExporter)builder.Build();
 
+            var exporter = (TableToJsonExporter) builder.Build();
 
             exporter.Export();
 
-            bool empty = string.IsNullOrWhiteSpace( File.ReadAllText(exporter.JsonPath));
+            bool empty;
+
+            empty = string.IsNullOrWhiteSpace(File.ReadAllText(tableName + ".json"));
 
             Assert.False(empty);
         }
@@ -64,20 +57,26 @@ namespace MusicBrainzTestLibrary
 
             exporter.Export();
 
-            bool empty = string.IsNullOrWhiteSpace(File.ReadAllText(exporter.JsonPath));
+            bool empty;
 
-            Assert.False(empty);
+
+            foreach (var table in builder.GetTableInfo())
+            {
+                empty = string.IsNullOrWhiteSpace(File.ReadAllText(table.Name + ".json"));
+                Assert.False(empty);
+            }
+
         }
 
         [Theory]
-        [InlineData("Area","ReleaseGroup")]
-        [InlineData("Label", "Release","Work")]
+        [InlineData("Area", "ReleaseGroup")]
+        [InlineData("Label", "Release", "Work")]
         [InlineData("Artist", "Place", "Recording", "Url")]
-        public void ExportSeveralTablesToJson_ShouldNotBeEmpty(params string[] tables)
+        public void ExportSeveralTablesToJson_ShouldNotBeEmpty(params string [] tables)
         {
             TableToJsonExporterBuilder builder = new();
 
-            foreach(string tableName in tables)
+            foreach (string tableName in tables)
             {
                 builder.UseTable(tableName);
             }
@@ -86,10 +85,43 @@ namespace MusicBrainzTestLibrary
 
             exporter.Export();
 
-            bool empty = string.IsNullOrWhiteSpace(File.ReadAllText(exporter.JsonPath));
+            bool empty;
+
+            foreach (var table in tables)
+            {
+                empty = string.IsNullOrWhiteSpace(File.ReadAllText(table + ".json"));
+                Assert.False(empty);
+            }
+
+        }
+        
+        [Theory]
+        [InlineData("Area", 5, 2)]
+        [InlineData("Artist", 10, 1)]
+        [InlineData("Label", 1, 8)]
+        [InlineData("Place", 5, 5)]
+        [InlineData("Recording", 10, 1)]
+        [InlineData("Release", 7, 2)]
+        [InlineData("ReleaseGroup", 5, 2)]
+        [InlineData("Url", 4, 3)]
+        [InlineData("Work", 2, 6)]
+        public void ExportOnePaginatedTable_ShouldWork(string tableName, int recordsPerPage, int pageNumber)
+        {
+            TableToJsonExporterBuilder builder = new();
+
+            builder.UseTable(tableName);
+
+            builder.EnablePagination(recordsPerPage, pageNumber);
+
+            var exporter = (TableToJsonExporter) builder.Build();
+
+            exporter.Export();
+
+            bool empty;
+
+            empty = string.IsNullOrWhiteSpace(File.ReadAllText(tableName + ".json"));
 
             Assert.False(empty);
-
         }
     }
 

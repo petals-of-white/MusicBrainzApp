@@ -156,24 +156,59 @@ namespace MusicBrainzDataAcessLibrary
         }
 
 
-        public IEnumerable<T> GetTableRecords<T>() where T : new()
+
+        /// <summary>
+        /// Executes sql and returns a list of entities
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        private IEnumerable<T> TableRecordsHelper<T>(int? recordsPerPage = null, int? pageNumber = null) where T : new()
         {
-            DataTable originalOutput,
-                        mappedOutput;
+            string sql;
 
             Type entityType = typeof(T);
 
-            List<T> entitiesList = new(); // this will be returned
+            string entityTypeName = entityType.Name;
 
-            string entityTypeName = entityType.Name,
 
-                    sql = @$"USE MusicBrainz;
+            if (recordsPerPage is null || pageNumber is null)
+            {
+                sql = @$"USE MusicBrainz;
                             SELECT
                                * 
                             FROM
                                {entityTypeName};";
+            }
 
+            else
+            {
+                if (recordsPerPage < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
+                }
+                if (pageNumber < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
+                }
 
+                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
+
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               * 
+                            FROM
+                               {entityTypeName}
+                            ORDER BY Id
+                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+
+            }
+
+            List<T> entitiesList = new(); // this will be returned
+
+            DataTable originalOutput,
+            mappedOutput;
 
             originalOutput = GetQueryResult(sql);
 
@@ -191,8 +226,6 @@ namespace MusicBrainzDataAcessLibrary
                     mappedOutput.Columns [entityProperty.Name].DataType = entityProperty.PropertyType;
                 }
             }
-
-
 
 
             // filling mappedOutput, using Entities instead of foreign keys.
@@ -253,6 +286,132 @@ namespace MusicBrainzDataAcessLibrary
             {
                 entitiesList.Add(mappedRow.ToObject<T>());
             }
+            return entitiesList;
+        }
+
+        public IEnumerable<T> GetTableRecords<T>(int recordsPerPage, int pageNumber) where T : new()
+        {
+            //int skippedRecords = recordsPerPage * (pageNumber - 1);
+            //string sql = @$"USE MusicBrainz;
+            //                SELECT
+            //                   * 
+            //                FROM
+            //                   {entityTypeName}
+            //                ORDER BY Id
+            //                OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+
+
+            IEnumerable<T> entitiesList = TableRecordsHelper<T>(recordsPerPage, pageNumber);
+            return entitiesList;
+        }
+
+        /// <summary>
+        /// Returns IEnumerable<T> where T is a record entity in a table
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetTableRecords<T>() where T : new()
+        {
+            IEnumerable<T> entitiesList = TableRecordsHelper<T>();
+
+            return entitiesList;
+
+            //DataTable originalOutput,
+            //            mappedOutput;
+
+            //Type entityType = typeof(T);
+
+            //List<T> entitiesList = new(); // this will be returned
+
+            //string entityTypeName = entityType.Name;
+
+            // string       sql = @$"USE MusicBrainz;
+            //                SELECT
+            //                   * 
+            //                FROM
+            //                   {entityTypeName};";
+
+            //IEnumerable<T> entitiesList = TableRecordsHelper<T>(sql);
+
+
+            //originalOutput = GetQueryResult(sql);
+
+            //// a structure copy of original table
+            //mappedOutput = originalOutput.Clone();
+
+            ////deleting gid
+            //mappedOutput.Columns.Remove("gid");
+
+            //// changing column type to corresponding entity
+            //foreach (var entityProperty in entityType.GetProperties())
+            //{
+            //    if (_allTypes.Contains(entityProperty.PropertyType))
+            //    {
+            //        mappedOutput.Columns [entityProperty.Name].DataType = entityProperty.PropertyType;
+            //    }
+            //}
+
+
+
+
+            //// filling mappedOutput, using Entities instead of foreign keys.
+
+            //foreach (DataRow originalRow in originalOutput.Rows)
+            //{
+            //    // new row created
+            //    DataRow mappedRow = mappedOutput.NewRow();
+
+            //    // checking all the properties of the entity
+            //    foreach (var entityProperty in entityType.GetProperties())
+            //    {
+            //        // vars for convenience
+            //        Type propertyType = entityProperty.PropertyType;
+            //        string propertyName = entityProperty.Name;
+
+            //        // if property's type is an Entity Class...
+            //        if (_allTypes.Contains(propertyType))
+            //        {
+            //            // getting a foreign key
+            //            int? foreignKey = Convert.IsDBNull(originalRow [propertyName]) ? null : (int) originalRow [propertyName];
+
+            //            object? foreignRecord = null;
+
+            //            if (foreignKey != null)
+            //            {
+            //                if (propertyType == typeof(Area))
+            //                {
+            //                    //foreignRecord = GetQueryResult(sql2).Rows [0].ToObject<Area>();
+            //                    foreignRecord = GetRecordById<Area>(foreignKey.Value);
+
+            //                }
+
+            //                else if (propertyType == typeof(ReleaseGroup))
+            //                {
+            //                    //foreignRecord = GetQueryResult(sql2).Rows [0].ToObject<ReleaseGroup>();
+            //                    foreignRecord = GetRecordById<ReleaseGroup>(foreignKey.Value);
+
+            //                }
+            //            }
+
+            //            mappedRow [propertyName] = foreignRecord;
+
+            //        }
+
+            //        else
+            //        {
+            //            mappedRow [propertyName] = originalRow [propertyName];
+            //        }
+            //    }
+
+            //    // finally, adding a new row
+            //    mappedOutput.Rows.Add(mappedRow);
+
+            //}
+
+            //foreach (DataRow mappedRow in mappedOutput.Rows)
+            //{
+            //    entitiesList.Add(mappedRow.ToObject<T>());
+            //}
 
 
 
