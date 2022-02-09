@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MusicBrainzExportLibrary.Exporting;
+﻿using MusicBrainzExportLibrary.Exporting;
+using MusicBrainzModelsLibrary.Tables;
 
 namespace MusicBrainzConsoleApp
 {
     internal static class UserMessages
     {
-        private static ITableExporterBuilder _exporter = new TableToJsonExporterBuilder();
+        private static TableToJsonExporterBuilder _exporterBuilder = new();
+
+        private static IList<ITable> _tables = _exporterBuilder.GetTableInfo();
 
         internal static void GreetUser()
         {
-            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON. Here are the tables");
+            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON. Here are the tables:");
         }
 
         internal static void ShowAllTablesAndNumberOfRecords()
@@ -21,13 +19,16 @@ namespace MusicBrainzConsoleApp
 
             const short defaultPadding = 15;
 
+            Console.WriteLine("#".PadRight(defaultPadding) + "Table name".PadRight(defaultPadding) + "Number of records".PadRight(defaultPadding));
+
             Console.WriteLine("".PadRight(defaultPadding * 3, '='));
 
-            Console.WriteLine("#".PadRight(defaultPadding) + "Table name".PadRight(defaultPadding) + "Amount of records".PadRight(defaultPadding));
+            //var tables = _exporterBuilder.GetTableInfo();
 
-            foreach (var table in _exporter.TablesInfo)
+            for (int i = 0; i < _tables.Count; i++)
             {
-                Console.WriteLine($"{table.Key,-defaultPadding}{table.Value.TableName,-defaultPadding}{table.Value.NumberOfRows,-defaultPadding}");
+                Console.WriteLine($"{i + 1,-defaultPadding}{_tables [i].Name,-defaultPadding}{_tables [i].NumberOfRecords,-defaultPadding}");
+
             }
 
             Console.WriteLine("".PadRight(defaultPadding * 3, '='));
@@ -36,38 +37,78 @@ namespace MusicBrainzConsoleApp
 
         internal static void PromptSelect()
         {
-            bool exportAllTables;
-            int tableNumber;
-            string input;
+            string? input;
 
-            Console.WriteLine("To select a table you want to serialize, please enter a corresponding number of a table. (e.g. '1' or '3'). To serialize all the tables, enter '*'");
+            Console.WriteLine("To select a table you want to export, please enter a corresponding number of a table. (e.g. '1' or '3'). " +
+                "You can also select multiple tables, separated by space (e.g. '1 5 6 8'). To export all the tables, enter '*'");
+
             Console.Write("Your choice: ");
 
-            while (true)
+            bool proceedFurther = false;
+            //while (true)
+            while (proceedFurther == false)
             {
                 input = Console.ReadLine();
 
+
                 if (input == "*")
                 {
-                    exportAllTables = true;
-                    Console.WriteLine("All tables are going be serialized be serialized.");
+                    _exporterBuilder.UseAllTables();
+
+                    Console.WriteLine("All the tables are going be exported.");
+
+                    proceedFurther = true;
+
                     break;
                 }
 
                 else
                 {
-                    if ((int.TryParse(input, out tableNumber) == true) &&
-                        (_exporter.TablesInfo.ContainsKey(tableNumber) == true))
+                    string [] splitInput = input.Split(' ', StringSplitOptions.RemoveEmptyEntries & StringSplitOptions.TrimEntries);
+
+                    while (true)
                     {
-                        _dbToJSONSerializer.TableToExport
-                        Console.WriteLine($"Good! The table {_exporter.TablesInfo [tableNumber].TableName} is going to be serialized;");
-                        break;
+                        try
+                        {
+                            // only distinct values
+                            int [] tablesNumbers = Array.ConvertAll(splitInput, int.Parse).Distinct().ToArray();
+
+                            // check whether all values are in range
+                            bool tableNumbersInValidRange = tablesNumbers.All(x => x > 0 && x <= _tables.Count);
+
+                            if (tableNumbersInValidRange)
+                            {
+                                foreach (int tableNumber in tablesNumbers)
+                                {
+                                    _exporterBuilder.UseTable(_tables [tableNumber - 1].Name);
+                                }
+                            }
+
+                            else
+                            {
+                                throw new ArgumentOutOfRangeException(nameof(tablesNumbers), $"Table numbers value were not in the range of {1}..{_tables.Count}");
+                            }
+
+
+                            proceedFurther = true;
+
+                            break;
+                        }
+
+                        catch (FormatException ex)
+                        {
+                            Console.Write("Incorrent data. Please enter a valid table name(s) and try once again: ");
+                            break;
+                        }
+
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
+                            break;
+                        }
+
                     }
 
-                    else
-                    {
-                        Console.Write("Incorrent data. Please enter a valid value and try once again: ");
-                    }
                 }
             }
 
@@ -95,15 +136,15 @@ namespace MusicBrainzConsoleApp
                     }
 
                     // Set a page number
-                    Console.Write("Please provide a page number you would like to serialize: ");
+                    Console.Write("Please provide a page number you would like to export: ");
                     while ((int.TryParse(Console.ReadLine(), out pageNumber) == false) || pageNumber < 1)
                     {
                         Console.WriteLine("The input data is wrong.");
-                        Console.Write("Please provide a page number you would like to serialize: ");
+                        Console.Write("Please provide a page number you would like to export: ");
                     }
 
                     // enables pagination and sets page number
-                    _exporter.EnablePagination(recordsPerPage, pageNumber);
+                    _exporterBuilder.EnablePagination(recordsPerPage, pageNumber);
 
                     Console.WriteLine($"The pagination will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
 
@@ -112,17 +153,11 @@ namespace MusicBrainzConsoleApp
 
                 case "no" or "n":
 
-                    // in this case the DBToJSONSerializer will do nothing about pagination,
-                    // because it's off by default
-
-                    //_dbToJSONSerializer.EnablePagination = false;
                     Console.WriteLine("The pagination will be disabled.");
                     break;
 
                 default:
 
-                    // same here
-                    //_dbToJSONSerializer.EnablePagination = false;
                     Console.WriteLine("The pagination will be disabled.");
                     break;
 
@@ -131,18 +166,24 @@ namespace MusicBrainzConsoleApp
 
         internal static void ConfirmResult()
         {
+            int sleepSeconds = 1;
+            Thread.Sleep(1000 * sleepSeconds);
+
+            Console.WriteLine("Exporting...");
+
+            Thread.Sleep(1000 * sleepSeconds);
+
             // Initialize serialization and confirm the result
             try
             {
-                _exporter.Build().Export();
-                Console.WriteLine("Serialization successfully completed.");
+                _exporterBuilder.Build().Export();
+                Console.WriteLine("Exportation has been successfully completed.");
             }
             catch (Exception ex)
             {
                 // Handle this exception
                 Console.WriteLine(ex.Message);
             }
-
 
         }
 
