@@ -7,25 +7,14 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
 
         [Required]
         public ReleaseGroup ReleaseGroup { get; set; }
 
-        //[Required]
-        //public ArtistCredit ArtistCredit { get; set; }
-
         [MaxLength(255)]
         public string? Barcode { get; set; }
-
-        //public Status? Status { get; set; }
-        //public Packaging? Status { get; set; }
-        //public Language? Language { get; set; }
-        //public Script? Script { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -37,6 +26,7 @@ namespace MusicBrainzModelsLibrary.Entities
 
         [Required]
         public short Quality { get; set; } = -1;
+
         public DateTime? LastUpdated { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Reflection;
 
-namespace MusicBrainzDataAcessLibrary
+namespace HelperLibrary
 {
     public static class RowToObjectConverter
     {

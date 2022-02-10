@@ -1,5 +1,4 @@
 ﻿using MusicBrainzDataAcessLibrary;
-using MusicBrainzModelsLibrary.Entities;
 using MusicBrainzModelsLibrary.Tables;
 
 namespace MusicBrainzExportLibrary.Exporting
@@ -46,6 +45,10 @@ namespace MusicBrainzExportLibrary.Exporting
             _jsonExporter.PageNumber = pageNumber;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
         public void UseAllTables()
         {
             foreach (ITable table in _jsonExporter.TablesInfo)
@@ -68,6 +71,7 @@ namespace MusicBrainzExportLibrary.Exporting
         /// Add a table with a specific name to export list
         /// </summary>
         /// <param name="tableName"></param>
+        /// <exception cref="ArgumentException"></exception>
         public void UseTable(string tableName)
         {
             // something
@@ -80,7 +84,7 @@ namespace MusicBrainzExportLibrary.Exporting
             {
                 throw new ArgumentException("A table with this name doesn't exist", "tableName");
             }
-            
+
         }
 
         public void UseTable(AvailableTables table)
@@ -96,7 +100,7 @@ namespace MusicBrainzExportLibrary.Exporting
         public IList<ITable> GetTableInfo()
         {
             return _jsonExporter.TablesInfo;
-            
+
         }
 
     }

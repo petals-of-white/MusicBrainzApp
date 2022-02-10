@@ -7,13 +7,8 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
-
-        //public WorkType Type { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -24,9 +19,5 @@ namespace MusicBrainzModelsLibrary.Entities
         public int EditsPending { get; set; }
 
         public DateTime? LastUpdated { get; set; }
-
-
-        // Not sure if I should add this one. Need to think it through.
-        //public Language Language { get; set; }
     }
 }

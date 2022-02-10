@@ -7,16 +7,8 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
-
-        //[Required]
-        //public ArtistCredit ArtistCredit { get; set; }
-
-        //public ReleaseGroupType Type { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -25,7 +17,6 @@ namespace MusicBrainzModelsLibrary.Entities
         [Required]
         [Range(0, int.MaxValue)]
         public int EditsPending { get; set; }
-
 
         public DateTime? LastUpdated { get; set; }
     }

@@ -11,6 +11,13 @@ namespace MusicBrainzDataAcessLibrary
 
         protected string _connectionString = ConfigHelper.GetConnectionString();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="SqlException"></exception>
         protected DataTable GetQueryResult(string sql)
         {
             DataTable output = new();
@@ -47,8 +54,8 @@ namespace MusicBrainzDataAcessLibrary
                 _logger.Log(ex.ToString());
                 throw;
             }
-            return output;
 
         }
 
     }
+}

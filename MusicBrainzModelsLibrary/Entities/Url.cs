@@ -7,9 +7,6 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         [Url]
         public string UrlValue { get; set; }
@@ -17,7 +14,6 @@ namespace MusicBrainzModelsLibrary.Entities
         [Required]
         [Range(0, int.MaxValue)]
         public int EditsPending { get; set; }
-
 
         public DateTime? LastUpdated { get; set; }
     }

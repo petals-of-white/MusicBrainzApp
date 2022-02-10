@@ -1,9 +1,6 @@
-﻿using MusicBrainzModelsLibrary.Tables;
-
-
-namespace MusicBrainzExportLibrary.Exporting
+﻿namespace MusicBrainzExportLibrary.Exporting
 {
-    public interface IPaginatedTableExporterBuilder:  ITableUsable, IPaginationCreator
+    public interface IPaginatedTableExporterBuilder : ITableUsable, IPaginationCreator
     {
         IPaginatedTableExporter Build();
 

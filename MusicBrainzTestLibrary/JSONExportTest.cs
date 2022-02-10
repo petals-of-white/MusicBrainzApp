@@ -94,7 +94,7 @@ namespace MusicBrainzTestLibrary
             }
 
         }
-        
+
         [Theory]
         [InlineData("Area", 5, 2)]
         [InlineData("Artist", 10, 1)]

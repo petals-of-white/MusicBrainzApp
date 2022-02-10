@@ -1,4 +1,6 @@
-﻿using MusicBrainzExportLibrary.Exporting;
+﻿using HelperLibrary.Logging;
+using Microsoft.Data.SqlClient;
+using MusicBrainzExportLibrary.Exporting;
 using MusicBrainzModelsLibrary.Tables;
 
 namespace MusicBrainzConsoleApp
@@ -8,6 +10,8 @@ namespace MusicBrainzConsoleApp
         private static TableToJsonExporterBuilder _exporterBuilder = new();
 
         private static IList<ITable> _tables = _exporterBuilder.GetTableInfo();
+
+        private static LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
         internal static void GreetUser()
         {
@@ -97,15 +101,40 @@ namespace MusicBrainzConsoleApp
 
                         catch (FormatException ex)
                         {
+                            _logger.Log(ex.ToString());
                             Console.Write("Incorrent data. Please enter a valid table name(s) and try once again: ");
                             break;
                         }
 
                         catch (ArgumentOutOfRangeException ex)
                         {
+                            _logger.Log(ex.ToString());
+
                             Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
+
                             break;
                         }
+
+                        catch (ArgumentException ex)
+                        {
+                            _logger.Log(ex.ToString());
+                            Console.WriteLine(ex.Message);
+
+                            break;
+
+                        }
+
+                        catch (OverflowException ex)
+                        {
+                            _logger.Log(ex.ToString());
+
+                            Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
+                            break;
+
+                        }
+
+
+
 
                     }
 
@@ -176,14 +205,66 @@ namespace MusicBrainzConsoleApp
             // Initialize serialization and confirm the result
             try
             {
-                _exporterBuilder.Build().Export();
+                ((TableToJsonExporter) _exporterBuilder.Build()).Export();
                 Console.WriteLine("Exportation has been successfully completed.");
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
-                // Handle this exception
+                _logger.Log(ex.ToString());
+
                 Console.WriteLine(ex.Message);
             }
+
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.Log(ex.ToString());
+                Console.WriteLine("An error has occured while trying to open json file. Please try again later.");
+
+                Thread.Sleep(sleepSeconds * 2000);
+
+                Environment.Exit(0);
+            }
+
+            catch (ArgumentOutOfRangeException ex)
+            {
+
+                _logger.Log(ex.ToString());
+                Console.WriteLine(ex.Message);
+
+                Thread.Sleep(sleepSeconds * 2000);
+
+                Environment.Exit(0);
+
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                Console.WriteLine(ex.Message);
+
+                Thread.Sleep(sleepSeconds * 2000);
+
+                Environment.Exit(0);
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                Console.WriteLine("An error has occured while connecting to database. Please try again later.");
+
+                Thread.Sleep(sleepSeconds * 2000);
+
+                Environment.Exit(0);
+
+
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <exception cref="IOException"></exception>
+            /// <exception cref="UnauthorizedAccessException"></exception>
+            /// <exception cref="ArgumentOutOfRangeException"></exception>
+            /// <exception cref="ArgumentException"></exception>
+            /// <exception cref="SqlException"></exception>
 
         }
 

@@ -7,17 +7,11 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
 
         [Required]
         public string SortName { get; set; }
-
-        //public AreaType Type { get; set; }
-
 
         public short? BeginDateYear { get; set; }
         public short? BeginDateMonth { get; set; }

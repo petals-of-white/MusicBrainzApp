@@ -38,13 +38,13 @@ namespace MusicBrainzTestLibrary
             Assert.NotEmpty(tableInfo);
 
             Assert.True(propertiesDontContainNulls);
-            
-            foreach(var table in tableInfo)
+
+            foreach (var table in tableInfo)
             {
                 output.WriteLine($"{table.Name}, {table.NumberOfRecords}");
             }
-            
-            
+
+
 
 
 

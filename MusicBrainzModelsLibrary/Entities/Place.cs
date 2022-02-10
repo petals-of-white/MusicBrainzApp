@@ -7,19 +7,13 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
-
-        //public PlaceType Type { get; set; }
 
         [Required]
         public string Address { get; set; } = "";
 
         public Area? Area { get; set; }
-        //Think of coordinates validation
         public string Coordinates { get; set; }
         //public SqlGeography Coordinates { get; set; }
 
@@ -39,6 +33,7 @@ namespace MusicBrainzModelsLibrary.Entities
 
         [Required]
         [Range(0, int.MaxValue)]
+
         public int EditsPending { get; set; }
 
         public DateTime? LastUpdated { get; set; }

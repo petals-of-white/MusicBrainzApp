@@ -7,17 +7,11 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
 
         [Required]
         public string SortName { get; set; }
-
-        //public ArtistType Type { get; set; }
-
 
         public short? BeginDateYear { get; set; }
         public short? BeginDateMonth { get; set; }
@@ -25,9 +19,6 @@ namespace MusicBrainzModelsLibrary.Entities
         public short? EndDateYear { get; set; }
         public short? EndDateMonth { get; set; }
         public short? EndDateDay { get; set; }
-
-
-        // public Gender? Gender { get; set; }
 
         [Required]
         public bool Ended { get; set; } = false;

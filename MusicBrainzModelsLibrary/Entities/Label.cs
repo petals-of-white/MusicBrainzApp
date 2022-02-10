@@ -7,16 +7,12 @@ namespace MusicBrainzModelsLibrary.Entities
         [Key]
         public int Id { get; set; }
 
-        //[Key]
-        // public string Gid { get; set; }
-
         [Required]
         public string Name { get; set; }
 
         [Required]
         public string SortName { get; set; }
 
-        //public LabelType Type { get; set; }
         [Range(1, 99999)]
         public int? LabelCode { get; set; }
 

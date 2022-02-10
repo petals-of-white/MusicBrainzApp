@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MusicBrainzExportLibrary.Exporting
+﻿namespace MusicBrainzExportLibrary.Exporting
 {
-    public interface ITableExporter: IExporter, ITableSelector
+    public interface ITableExporter : IExporter, ITableSelector
     {
     }
 }
