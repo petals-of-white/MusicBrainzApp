@@ -5,7 +5,7 @@
     /// </summary>
     public class FileLoggerFactory : LoggerFactory
     {
-        string _filePath;
+        private string _filePath;
         public FileLoggerFactory(string filePath)
         {
             _filePath = filePath;

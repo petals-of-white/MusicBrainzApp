@@ -14,7 +14,7 @@ namespace HelperLibrary.Logging
         {
             try
             {
-                File.AppendAllText(_filePath, GetFormattedMessage(message) + "\n");
+                File.AppendAllText(_filePath, GetFormattedMessage(message) + "\n\n");
             }
             catch (Exception ex)
             {
