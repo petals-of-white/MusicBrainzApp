@@ -7,18 +7,22 @@ namespace MusicBrainzExportLibrary.Exporting
     {
         private TableToJsonExporter _jsonExporter = new();
 
-        /// <summary>
-        /// Sets a path to a json file for the exporter
-        /// </summary>
-        /// <param name="jsonPath"></param>
-        public void JsonPath(string jsonPath)
-        {
+        ///// <summary>
+        ///// Sets a path to a json file for the exporter
+        ///// </summary>
+        ///// <param name="jsonPath"></param>
+        //public void JsonPath(string jsonPath)
+        //{
 
-        }
+        //}
+
+
+
+
         /// <summary>
         /// Builds the json exporter
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An instance of TableToJsonExporter.</returns>
         public IPaginatedTableExporter Build()
         {
             return _jsonExporter;
@@ -38,8 +42,23 @@ namespace MusicBrainzExportLibrary.Exporting
         /// </summary>
         /// <param name="recordsPerPage"></param>
         /// <param name="pageNumber"></param>
+        /// <exception cref="UserFriendlyException">This exception is thrown when recordsPerPage or pageNumber is less than 1</exception>
         public void EnablePagination(int recordsPerPage, int pageNumber)
         {
+            if (recordsPerPage < 1)
+            {
+                var innerEx = new ArgumentOutOfRangeException(nameof(recordsPerPage), "Value is out of range.");
+                var resultEx = new UserFriendlyException("You can not have zero or less records per page.", innerEx);
+                throw resultEx;
+            }
+
+            if (pageNumber < 1)
+            {
+                var innerEx = new ArgumentOutOfRangeException(nameof(pageNumber),"Value is out of range.");
+                var resultEx = new UserFriendlyException("You can not select a page with number zero or less.", innerEx);
+                throw resultEx;
+            }
+
             _jsonExporter.PaginationEnabled = true;
             _jsonExporter.RecordsPerPage = recordsPerPage;
             _jsonExporter.PageNumber = pageNumber;
@@ -60,11 +79,6 @@ namespace MusicBrainzExportLibrary.Exporting
         public void UseTable(ITable table)
         {
             throw new NotImplementedException();
-            //WARNING!!!!!
-            // Not sure if this works for STRUCTs
-
-            //if (_jsonExporter.TablesInfo.Values.Contains(table) == false)
-            //    _jsonExporter.SelectedTables.Add(table);
         }
 
         /// <summary>
@@ -84,13 +98,11 @@ namespace MusicBrainzExportLibrary.Exporting
             {
                 throw new ArgumentException("A table with this name doesn't exist", "tableName");
             }
-
         }
 
         public void UseTable(AvailableTables table)
         {
             throw new NotImplementedException();
-            //_jsonExporter.SelectedTables.Add(); 
         }
 
         /// <summary>

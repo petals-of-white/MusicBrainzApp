@@ -1,14 +1,68 @@
 ﻿using System.Data;
 using HelperLibrary;
+using HelperLibrary.Logging;
 using Microsoft.Data.SqlClient;
 using MusicBrainzModelsLibrary.Entities;
 using MusicBrainzModelsLibrary.Tables;
 
 namespace MusicBrainzDataAcessLibrary
 {
-    public class DBAccess : DBAccessBase
+    public class DBAccess
     {
 
+        protected LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
+
+        protected string _connectionString = ConfigHelper.GetConnectionString();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="SqlException"></exception>
+        protected DataTable GetQueryResult(string sql)
+        {
+            DataTable output = new();
+            SqlDataReader? reader;
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+
+                connection.Open();
+
+                using SqlCommand cmd = new SqlCommand();
+
+                cmd.Connection = connection;
+                cmd.CommandText = sql;
+
+                reader = cmd.ExecuteReader();
+
+                output.Load(reader);
+
+                return output;
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+        }
 
         private readonly HashSet<Type> _allTypes = new()
         {
@@ -23,8 +77,6 @@ namespace MusicBrainzDataAcessLibrary
             typeof(Place),
         };
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -32,10 +84,12 @@ namespace MusicBrainzDataAcessLibrary
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
-        public int GetNumberOfRows(string tableName)
+        public int? GetNumberOfRows(string tableName)
         {
-            int rows = -1;
-            string sql = @$"SELECT COUNT(*)
+            int? rows = null;
+
+            string sql = @$"USE MusicBrainz;
+                            SELECT COUNT(*)
                             FROM {tableName};";
 
             var queryResult = GetQueryResult(sql);
@@ -46,26 +100,28 @@ namespace MusicBrainzDataAcessLibrary
                 object? rawData = queryResult.Rows [0].ItemArray [0];
 
                 rows = Convert.ToInt32(rawData);
-
             }
+
 
             catch (DeletedRowInaccessibleException ex)
             {
                 // log here
                 _logger.Log(ex.ToString());
-                throw;
             }
+
             catch (IndexOutOfRangeException ex)
             {
                 // log here
                 _logger.Log(ex.ToString());
-                throw;
+            }
+
+            catch (FormatException ex)
+            {
+                _logger.Log(ex.ToString());
             }
 
             return rows;
-
         }
-
 
         /// <summary>
         /// 
@@ -75,7 +131,6 @@ namespace MusicBrainzDataAcessLibrary
         /// <exception cref="SqlException"></exception>
         public IList<ITable> GetTablesInfo()
         {
-
             string sql = @"USE MusicBrainz;
                             SELECT
                                # = ROW_NUMBER() OVER (
@@ -92,41 +147,30 @@ namespace MusicBrainzDataAcessLibrary
 
             DataTable tablesInfo;
 
-            try
-            {
-                tablesInfo = GetQueryResult(sql);
-            }
-
-            catch (ArgumentException)
-            {
-                throw;
-            }
-
-            catch (SqlException)
-            {
-                throw;
-            }
-
+            tablesInfo = GetQueryResult(sql);
 
             DataTable tableInfoWithNumberOfRows = tablesInfo.Clone();
-
 
             try
             {
                 tableInfoWithNumberOfRows.Columns.Add("NumberOfRecords", typeof(string));
-
             }
+
+            catch (DuplicateNameException ex)
+            {
+                _logger.Log(ex.ToString());
+            }
+
             catch (InvalidExpressionException ex)
             {
-                throw;
+                _logger.Log(ex.ToString());
             }
-
 
             foreach (DataRow row in tablesInfo.Rows)
             {
                 int tableNumber = Convert.ToInt32(row [0]);
                 string tableName = (string) row [1];
-                int numberOfRows = GetNumberOfRows(tableName);
+                int? numberOfRows = GetNumberOfRows(tableName);
 
                 tableInfoWithNumberOfRows.Rows.Add(tableNumber, tableName, numberOfRows);
             }
@@ -135,73 +179,11 @@ namespace MusicBrainzDataAcessLibrary
 
             foreach (DataRow row in tableInfoWithNumberOfRows.Rows)
             {
-                try
-                {
-                    outputList.Add(row.ToObject<Table>());
-
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                // handle exceptions
+                outputList.Add(row.ToObject<Table>());
             }
-
             return outputList;
-
         }
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="SqlException"></exception>
-        public IEnumerable<object> GetTableRecords(string tableName)
-        {
-            throw new NotImplementedException();
-            //DataTable output;
-            //string sql = @$"USE MusicBrainz;
-            //                SELECT
-            //                   * 
-            //                FROM
-            //                   {tableName};";
-
-            //try
-            //{
-            //    output = GetQueryResult(sql);
-
-            //}
-
-            //catch (ArgumentException ex)
-            //{
-            //    throw;
-            //}
-
-            //catch (SqlException ex)
-            //{
-            //    throw;
-            //}
-
-            //List<object> records = new List<object>();
-
-            //foreach (DataRow row in output.Rows)
-            //{
-            //    try
-            //    {
-            //        row.ToObject<Area>();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw;
-            //    }
-            //}
-            //return new List<object>();
-
-        }
-
-
 
         /// <summary>
         /// 
@@ -210,11 +192,11 @@ namespace MusicBrainzDataAcessLibrary
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
         /// /// <exception cref="Exception"></exception>
-        public T GetRecordById<T>(int id) where T : new()
+        public T? GetRecordById<T>(int id) where T : new()
         {
             Type entityType = typeof(T);
 
-            T? result;
+            T? result = default(T);
             string entityTypeName = entityType.Name;
 
             string sql = @$"USE MusicBrainz;
@@ -228,36 +210,25 @@ namespace MusicBrainzDataAcessLibrary
             {
                 result = GetQueryResult(sql).Rows [0].ToObject<T>();
             }
-            catch (ArgumentException)
+
+            catch (IndexOutOfRangeException ex)
             {
-                throw;
+                _logger.Log(ex.ToString());
             }
 
-            catch (SqlException)
-            {
-                throw;
-            }
-
-            catch (Exception e)
-            {
-                throw;
-            }
 
             return result;
         }
 
-
-
         /// <summary>
-        /// Executes sql and returns a list of entities
+        /// Gets table records from the db according to T entity.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="SqlException"></exception>
+        /// <returns>A list of T entities.</returns>
         /// <exception cref="ArgumentException"></exception>
-        private IEnumerable<T> TableRecordsHelper<T>(int? recordsPerPage = null, int? pageNumber = null) where T : new()
+        /// <exception cref="ArgumentOutOfRangeException">Occurs when recordsPerPage or pageNumber is les than 1</exception>
+        /// <exception cref="SqlException">DB problem</exception>
+        // This method needs a better implementing
+        public IEnumerable<T> GetTableRecords<T>(int? recordsPerPage = null, int? pageNumber = null) where T : new()
         {
             string sql;
 
@@ -281,6 +252,7 @@ namespace MusicBrainzDataAcessLibrary
                 {
                     throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
                 }
+
                 if (pageNumber < 1)
                 {
                     throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
@@ -303,28 +275,23 @@ namespace MusicBrainzDataAcessLibrary
             DataTable originalOutput,
             mappedOutput;
 
+            originalOutput = GetQueryResult(sql);
+
+            // a structure copy of original table
+            mappedOutput = originalOutput.Clone();
+
             try
             {
-                originalOutput = GetQueryResult(sql);
-
-                // a structure copy of original table
-                mappedOutput = originalOutput.Clone();
-
                 //deleting gid
                 mappedOutput.Columns.Remove("gid");
             }
 
             catch (ArgumentException ex)
             {
-                throw;
+                _logger.Log(ex.ToString());
             }
 
-            catch (SqlException ex)
-            {
-                throw;
-            }
-
-
+            // !!!! Create a separate entities helper !!!!
             // changing column type to corresponding entity
             foreach (var entityProperty in entityType.GetProperties())
             {
@@ -361,7 +328,7 @@ namespace MusicBrainzDataAcessLibrary
                         {
                             if (propertyType == typeof(Area))
                             {
-                                //foreignRecord = GetQueryResult(sql2).Rows [0].ToObject<Area>();
+                                // GetRecordsById - get list instead of one record. !!!!!!!!!!!!!!!!
                                 foreignRecord = GetRecordById<Area>(foreignKey.Value);
 
                             }
@@ -391,89 +358,10 @@ namespace MusicBrainzDataAcessLibrary
 
             foreach (DataRow mappedRow in mappedOutput.Rows)
             {
-                try
-                {
-                    entitiesList.Add(mappedRow.ToObject<T>());
-
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            }
-            return entitiesList;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="SqlException"></exception>
-        public IEnumerable<T> GetTableRecords<T>(int recordsPerPage, int pageNumber) where T : new()
-        {
-            IEnumerable<T> entitiesList;
-
-            try
-            {
-                entitiesList = TableRecordsHelper<T>(recordsPerPage, pageNumber);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                throw;
-            }
-            catch (ArgumentException)
-            {
-                throw;
-            }
-
-            catch (SqlException)
-            {
-                throw;
+                entitiesList.Add(mappedRow.ToObject<T>());
             }
 
             return entitiesList;
         }
-
-
-
-        /// <summary>
-        /// Returns IEnumerable<T> where T is a record entity in a table
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="SqlException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public IEnumerable<T> GetTableRecords<T>() where T : new()
-        {
-            IEnumerable<T> entitiesList;
-            try
-            {
-                entitiesList = TableRecordsHelper<T>();
-            }
-
-            catch (ArgumentOutOfRangeException ex)
-            {
-                throw;
-            }
-
-            catch (ArgumentException ex)
-            {
-                throw;
-            }
-
-            catch (SqlException ex)
-            {
-                throw;
-            }
-
-
-            return entitiesList;
-        }
-
     }
-
 }

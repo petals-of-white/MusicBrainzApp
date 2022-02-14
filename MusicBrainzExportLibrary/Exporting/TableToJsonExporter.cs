@@ -1,4 +1,5 @@
 ﻿using HelperLibrary;
+using HelperLibrary.Logging;
 using Microsoft.Data.SqlClient;
 using MusicBrainzDataAcessLibrary;
 using MusicBrainzModelsLibrary.Entities;
@@ -8,24 +9,24 @@ namespace MusicBrainzExportLibrary.Exporting
 {
     public class TableToJsonExporter : IPaginatedTableExporter
     {
-
-        //public IDictionary<int, ITable> TablesInfo { get; internal set; }
+        private LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
         private DBAccess _db = new();
 
         /// <summary>
         /// 
         /// </summary>
-        /// <exception cref="SqlException"></exception>
+        /// <exception cref="UserFriendlyException"></exception>
         public TableToJsonExporter()
         {
             try
             {
                 TablesInfo = _db.GetTablesInfo();
             }
-            catch (SqlException ex)
+
+            catch (Exception ex)
             {
-                throw;
+                throw new UserFriendlyException("An error has occured while trying to get data from the database. Please try again. Later", ex);
             }
         }
 
@@ -61,114 +62,56 @@ namespace MusicBrainzExportLibrary.Exporting
 
             catch (ArgumentException ex)
             {
-                throw;
+                throw new UserFriendlyException($"The database doesn't have a table named {table.Name}", ex);
+                //throw new ArgumentException($"The database doesn't have a table named {table.Name}", ex);
             }
 
             try
             {
-                switch (PaginationEnabled)
+                switch (tableOption)
                 {
-                    case true:
-
-                        switch (tableOption)
-                        {
-                            case AvailableTables.Area:
-                                entities = _db.GetTableRecords<Area>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Artist:
-                                entities = _db.GetTableRecords<Artist>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Label:
-                                entities = _db.GetTableRecords<Label>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Place:
-                                entities = _db.GetTableRecords<Place>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Recording:
-                                entities = _db.GetTableRecords<Recording>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Release:
-                                entities = _db.GetTableRecords<Release>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.ReleaseGroup:
-                                entities = _db.GetTableRecords<ReleaseGroup>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Url:
-                                entities = _db.GetTableRecords<Url>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-
-                            case AvailableTables.Work:
-                                entities = _db.GetTableRecords<Work>(RecordsPerPage.Value, PageNumber.Value);
-                                break;
-                        }
-
+                    case AvailableTables.Area:
+                        entities = _db.GetTableRecords<Area>(RecordsPerPage, PageNumber);
                         break;
 
-                    case false:
-
-                        switch (tableOption)
-                        {
-                            case AvailableTables.Area:
-                                entities = _db.GetTableRecords<Area>();
-                                break;
-
-                            case AvailableTables.Artist:
-                                entities = _db.GetTableRecords<Artist>();
-                                break;
-
-                            case AvailableTables.Label:
-                                entities = _db.GetTableRecords<Label>();
-                                break;
-
-                            case AvailableTables.Place:
-                                entities = _db.GetTableRecords<Place>();
-                                break;
-
-                            case AvailableTables.Recording:
-                                entities = _db.GetTableRecords<Recording>();
-                                break;
-
-                            case AvailableTables.Release:
-                                entities = _db.GetTableRecords<Release>();
-                                break;
-
-                            case AvailableTables.ReleaseGroup:
-                                entities = _db.GetTableRecords<ReleaseGroup>();
-                                break;
-
-                            case AvailableTables.Url:
-                                entities = _db.GetTableRecords<Url>();
-                                break;
-
-                            case AvailableTables.Work:
-                                entities = _db.GetTableRecords<Work>();
-                                break;
-                        }
-
+                    case AvailableTables.Artist:
+                        entities = _db.GetTableRecords<Artist>(RecordsPerPage, PageNumber);
                         break;
-                }
+
+                    case AvailableTables.Label:
+                        entities = _db.GetTableRecords<Label>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.Place:
+                        entities = _db.GetTableRecords<Place>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.Recording:
+                        entities = _db.GetTableRecords<Recording>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.Release:
+                        entities = _db.GetTableRecords<Release>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.ReleaseGroup:
+                        entities = _db.GetTableRecords<ReleaseGroup>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.Url:
+                        entities = _db.GetTableRecords<Url>(RecordsPerPage, PageNumber);
+                        break;
+
+                    case AvailableTables.Work:
+                        entities = _db.GetTableRecords<Work>(RecordsPerPage, PageNumber);
+                        break;
+                };
             }
 
             catch (ArgumentOutOfRangeException ex)
             {
-                throw;
-            }
-
-            catch (ArgumentException ex)
-            {
-                throw;
-            }
-
-            catch (SqlException ex)
-            {
-                throw;
+                _logger.Log(ex.ToString());
+                throw new UserFriendlyException(ex.Message, ex);
             }
 
             return entities;
@@ -177,34 +120,18 @@ namespace MusicBrainzExportLibrary.Exporting
         /// <summary>
         /// 
         /// </summary>
-        /// <exception cref="IOException"></exception>
-        /// <exception cref="UnauthorizedAccessException"></exception>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="SqlException"></exception>
+        /// <exception cref="UserFriendlyException"></exception>
+        ///// <exception cref="IOException"></exception>
+        ///// <exception cref="UnauthorizedAccessException"></exception>
+        ///// <exception cref="ArgumentOutOfRangeException"></exception>
+        ///// <exception cref="ArgumentException"></exception>
+        ///// <exception cref="SqlException"></exception>
         public void Export()
         {
-            //File.WriteAllText(JsonPath, string.Empty);
-
             foreach (ITable table in SelectedTables)
             {
                 string tableJsonPath = $"{table.Name}.json";
-                try
-                {
-                    File.WriteAllText(tableJsonPath, string.Empty);
-
-                }
-                catch (IOException ex)
-                {
-                    throw;
-                }
-
-                catch (UnauthorizedAccessException ex)
-                {
-                    throw;
-                }
-
-                IEnumerable<object>? rawRecords;
+                IEnumerable<object>? rawRecords = null;
 
                 try
                 {
@@ -212,38 +139,47 @@ namespace MusicBrainzExportLibrary.Exporting
 
                 }
 
-                catch (ArgumentOutOfRangeException ex)
+                catch (UserFriendlyException ex)
                 {
-                    throw;
+                    _logger.Log(ex.ToString());
                 }
 
-                catch (ArgumentException ex)
-                {
-                    throw;
-                }
+                //catch (ArgumentOutOfRangeException ex)
+                //{
+                //    throw;
+                //}
 
-                catch (SqlException ex)
-                {
-                    throw;
-                }
+                //catch (ArgumentException ex)
+                //{
+                //    throw;
+                //}
+
+                //catch (SqlException ex)
+                //{
+                //    throw;
+                //}
 
                 string json = JsonConvert.SerializeObject(rawRecords, Formatting.Indented);
 
                 try
                 {
+                    File.WriteAllText(tableJsonPath, string.Empty);
                     File.AppendAllText(tableJsonPath, json);
-
                 }
-                catch (IOException ex)
+
+                catch (Exception ex)
                 {
-                    throw;
+                    throw new UserFriendlyException("An error has occured while trying to write data to a json file. Please try again later.", ex);
                 }
+                //catch (IOException ex)
+                //{
+                //    throw;
+                //}
 
-                catch (UnauthorizedAccessException ex)
-                {
-                    throw;
-                }
-
+                //catch (UnauthorizedAccessException ex)
+                //{
+                //    throw;
+                //}
             }
         }
 

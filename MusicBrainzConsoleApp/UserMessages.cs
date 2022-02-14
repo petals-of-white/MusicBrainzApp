@@ -1,5 +1,6 @@
 ﻿using HelperLibrary.Logging;
 using Microsoft.Data.SqlClient;
+using MusicBrainzExportLibrary;
 using MusicBrainzExportLibrary.Exporting;
 using MusicBrainzModelsLibrary.Tables;
 
@@ -121,7 +122,6 @@ namespace MusicBrainzConsoleApp
                             Console.WriteLine(ex.Message);
 
                             break;
-
                         }
 
                         catch (OverflowException ex)
@@ -132,15 +132,9 @@ namespace MusicBrainzConsoleApp
                             break;
 
                         }
-
-
-
-
                     }
-
                 }
             }
-
         }
 
         internal static void AskForPagination()
@@ -173,7 +167,16 @@ namespace MusicBrainzConsoleApp
                     }
 
                     // enables pagination and sets page number
-                    _exporterBuilder.EnablePagination(recordsPerPage, pageNumber);
+                    try
+                    {
+                        _exporterBuilder.EnablePagination(recordsPerPage, pageNumber);
+                    }
+                    catch (UserFriendlyException ex)
+                    {
+                        _logger.Log(ex.ToString());
+                        Console.WriteLine(ex.Message);
+                    }
+                    
 
                     Console.WriteLine($"The pagination will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
 
@@ -193,14 +196,20 @@ namespace MusicBrainzConsoleApp
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="SqlException"></exception>
         internal static void ConfirmResult()
         {
-            int sleepSeconds = 1;
-            Thread.Sleep(1000 * sleepSeconds);
 
             Console.WriteLine("Exporting...");
 
-            Thread.Sleep(1000 * sleepSeconds);
 
             // Initialize serialization and confirm the result
             try
@@ -208,66 +217,56 @@ namespace MusicBrainzConsoleApp
                 ((TableToJsonExporter) _exporterBuilder.Build()).Export();
                 Console.WriteLine("Exportation has been successfully completed.");
             }
-            catch (IOException ex)
-            {
-                _logger.Log(ex.ToString());
 
-                Console.WriteLine(ex.Message);
-            }
-
-            catch (UnauthorizedAccessException ex)
-            {
-                _logger.Log(ex.ToString());
-                Console.WriteLine("An error has occured while trying to open json file. Please try again later.");
-
-                Thread.Sleep(sleepSeconds * 2000);
-
-                Environment.Exit(0);
-            }
-
-            catch (ArgumentOutOfRangeException ex)
-            {
-
-                _logger.Log(ex.ToString());
-                Console.WriteLine(ex.Message);
-
-                Thread.Sleep(sleepSeconds * 2000);
-
-                Environment.Exit(0);
-
-            }
-            catch (ArgumentException ex)
+            catch(UserFriendlyException ex)
             {
                 _logger.Log(ex.ToString());
                 Console.WriteLine(ex.Message);
-
-                Thread.Sleep(sleepSeconds * 2000);
-
-                Environment.Exit(0);
             }
+            //catch (IOException ex)
+            //{
+            //    _logger.Log(ex.ToString());
 
-            catch (SqlException ex)
-            {
-                _logger.Log(ex.ToString());
-                Console.WriteLine("An error has occured while connecting to database. Please try again later.");
+            //    Console.WriteLine(ex.Message);
+            //}
 
-                Thread.Sleep(sleepSeconds * 2000);
+            //catch (UnauthorizedAccessException ex)
+            //{
+            //    _logger.Log(ex.ToString());
+            //    Console.WriteLine("An error has occured while trying to open json file. Please try again later.");
 
-                Environment.Exit(0);
+
+            //    Environment.Exit(0);
+            //}
+
+            //catch (ArgumentOutOfRangeException ex)
+            //{
+
+            //    _logger.Log(ex.ToString());
+            //    Console.WriteLine(ex.Message);
 
 
-            }
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <exception cref="IOException"></exception>
-            /// <exception cref="UnauthorizedAccessException"></exception>
-            /// <exception cref="ArgumentOutOfRangeException"></exception>
-            /// <exception cref="ArgumentException"></exception>
-            /// <exception cref="SqlException"></exception>
+            //    Environment.Exit(0);
+
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.Log(ex.ToString());
+            //    Console.WriteLine(ex.Message);
+
+
+            //    Environment.Exit(0);
+            //}
+
+            //catch (SqlException ex)
+            //{
+            //    _logger.Log(ex.ToString());
+            //    Console.WriteLine("An error has occured while connecting to database. Please try again later.");
+            //    Environment.Exit(0);
+            //}
+
 
         }
-
         internal static void SayGoodbye()
         {
             Console.WriteLine("Thank you for using our app. Have a good day.");

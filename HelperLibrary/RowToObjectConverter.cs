@@ -32,6 +32,7 @@ namespace HelperLibrary
                 return property;
             }
 
+            // check for null
             return type.GetProperties()
                  .Where(p => p.IsDefined(typeof(DisplayAttribute), false) && p.GetCustomAttributes(typeof(DisplayAttribute), false).Cast<DisplayAttribute>().Single().Name == attributeName)
                  .FirstOrDefault();
@@ -39,13 +40,13 @@ namespace HelperLibrary
 
         public static object ChangeType(object value, Type type)
         {
+            if (value == null)
+            {
+                return null;
+            }
+
             if (type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (value == null)
-                {
-                    return null;
-                }
-
                 return Convert.ChangeType(value, Nullable.GetUnderlyingType(type));
             }
 
