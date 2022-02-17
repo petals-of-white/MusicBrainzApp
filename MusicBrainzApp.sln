@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzConsoleApp", "MusicBrainzConsoleApp\MusicBrainzConsoleApp.csproj", "{E7D48919-9753-4D2B-B59C-025B8B6FBCF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.Tools", "MusicBrainz.Tools\MusicBrainz.Tools.csproj", "{BA366C03-5F24-4EC1-85F0-647662AE32D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzTestLibrary", "MusicBrainzTestLibrary\MusicBrainzTestLibrary.csproj", "{AD9B0F40-F949-45E6-BD12-2E927DC11F20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.Common", "MusicBrainz.Common\MusicBrainz.Common.csproj", "{878ED622-F12F-4E19-AC5C-14F610F2128E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzDataAcessLibrary", "MusicBrainzDataAcessLibrary\MusicBrainzDataAcessLibrary.csproj", "{2A3EF702-64A5-49AA-8F9C-41BD435DA805}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.Tests", "MusicBrainz.Tests\MusicBrainz.Tests.csproj", "{A2257759-1C06-4BEB-806F-25E366EF3D44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelperLibrary", "HelperLibrary\HelperLibrary.csproj", "{61605130-5559-4F18-85C7-82CEEFC12052}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.BLL", "MusicBrainz.BLL\MusicBrainz.BLL.csproj", "{C2C01EB7-646B-4E22-B78F-E943C88C7F6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainzExportLibrary", "MusicBrainzExportLibrary\MusicBrainzExportLibrary.csproj", "{D384EA16-AD6C-44D3-83D9-59E708163DA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.DAL", "MusicBrainz.DAL\MusicBrainz.DAL.csproj", "{6EA3372C-1530-4103-B914-618E42B96027}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBrainzModelsLibrary", "MusicBrainzModelsLibrary\MusicBrainzModelsLibrary.csproj", "{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBrainz.ConsoleUI", "MusicBrainz.ConsoleUI\MusicBrainz.ConsoleUI.csproj", "{CC7A814C-8E17-4597-A87F-8299D755D85F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,30 +21,30 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E7D48919-9753-4D2B-B59C-025B8B6FBCF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7D48919-9753-4D2B-B59C-025B8B6FBCF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7D48919-9753-4D2B-B59C-025B8B6FBCF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7D48919-9753-4D2B-B59C-025B8B6FBCF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD9B0F40-F949-45E6-BD12-2E927DC11F20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A3EF702-64A5-49AA-8F9C-41BD435DA805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A3EF702-64A5-49AA-8F9C-41BD435DA805}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A3EF702-64A5-49AA-8F9C-41BD435DA805}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A3EF702-64A5-49AA-8F9C-41BD435DA805}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61605130-5559-4F18-85C7-82CEEFC12052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61605130-5559-4F18-85C7-82CEEFC12052}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61605130-5559-4F18-85C7-82CEEFC12052}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61605130-5559-4F18-85C7-82CEEFC12052}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D384EA16-AD6C-44D3-83D9-59E708163DA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54BC677B-5F8D-423A-BC3F-AF23504CEAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA366C03-5F24-4EC1-85F0-647662AE32D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA366C03-5F24-4EC1-85F0-647662AE32D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA366C03-5F24-4EC1-85F0-647662AE32D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA366C03-5F24-4EC1-85F0-647662AE32D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{878ED622-F12F-4E19-AC5C-14F610F2128E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{878ED622-F12F-4E19-AC5C-14F610F2128E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{878ED622-F12F-4E19-AC5C-14F610F2128E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{878ED622-F12F-4E19-AC5C-14F610F2128E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2257759-1C06-4BEB-806F-25E366EF3D44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2257759-1C06-4BEB-806F-25E366EF3D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2257759-1C06-4BEB-806F-25E366EF3D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2257759-1C06-4BEB-806F-25E366EF3D44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2C01EB7-646B-4E22-B78F-E943C88C7F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C01EB7-646B-4E22-B78F-E943C88C7F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C01EB7-646B-4E22-B78F-E943C88C7F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C01EB7-646B-4E22-B78F-E943C88C7F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EA3372C-1530-4103-B914-618E42B96027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EA3372C-1530-4103-B914-618E42B96027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EA3372C-1530-4103-B914-618E42B96027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EA3372C-1530-4103-B914-618E42B96027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC7A814C-8E17-4597-A87F-8299D755D85F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC7A814C-8E17-4597-A87F-8299D755D85F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC7A814C-8E17-4597-A87F-8299D755D85F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC7A814C-8E17-4597-A87F-8299D755D85F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="MusicBrainz.Common.Entities.Area">
+    <Position X="3.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AFACAAIEAAAAAAEIAAAAAAUAAAAEQAQAAAAAAgAAAAA=</HashCode>
+      <FileName>Entities\Area.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Artist">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AFACAAIEAAAAAAEIAAAIAAUAAAAEQAQgAAAAAwAAAAA=</HashCode>
+      <FileName>Entities\Artist.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Area" />
+      <Property Name="BeginArea" />
+      <Property Name="EndArea" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Label">
+    <Position X="3.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AFACAAIEAAAAAAEIAAAAgAUAAAAEQAQAAAAAAwAAAAA=</HashCode>
+      <FileName>Entities\Label.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Area" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Place">
+    <Position X="6.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEACAAIEAAAAAAEIAAAAAAUAIAAEQAQCAAAAAwAAAAA=</HashCode>
+      <FileName>Entities\Place.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Area" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Recording" Collapsed="true">
+    <Position X="16" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAAAAAAAAAAAAAVAAAAAQAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Entities\Recording.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Release">
+    <Position X="13.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAEAAABAAAAAAAUAAAAAQAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Entities\Release.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ReleaseGroup" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.ReleaseGroup">
+    <Position X="10.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAAAAAAAAAAAAAUAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\ReleaseGroup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Url" Collapsed="true">
+    <Position X="17.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEACAAAAAAAAAAAAAAAAAAEAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Url.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Common.Entities.Work" Collapsed="true">
+    <Position X="16" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAAAAAAAAAAAAAUAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Work.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>
