@@ -126,5 +126,38 @@ namespace MusicBrainz.Tests
             var result = db.GetTableRecords(tableOption, 1000, 3);
             Assert.DoesNotContain(null, result);
         }
+
+        [Theory]
+        [MemberData(nameof(GetTablesEnum))]
+        public void GetRecordsList_ShouldBePerfectAndNotEmpty(Tables table)
+        {
+            DbAccess db = new();
+            int numberOfRecords = 50000;
+            int [] ids = new int [numberOfRecords];
+            for (int i = 0; i < numberOfRecords; i++)
+            {
+                ids [i] = i + 1;
+            }
+            var entities = db.GetRecordsList(ids, table);
+            Assert.NotEmpty(entities);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTablesEnum))]
+        public void GetMultipleRecordsById_ShowShouldNotBeEmpty(Tables table)
+        {
+            DbAccess db = new();
+
+            int numberOfRecords = 50000;
+
+            object? [] entities = new object? [numberOfRecords];
+
+            for (int i = 0; i < numberOfRecords; i++)
+            {
+                entities [i] = db.GetRecordById(i + 1, table);
+            }
+            Assert.NotEmpty(entities);
+        }
+
     }
 }

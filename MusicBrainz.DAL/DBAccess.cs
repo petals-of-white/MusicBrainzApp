@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text;
 using Microsoft.Data.SqlClient;
 using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
@@ -193,6 +194,102 @@ namespace MusicBrainz.DAL
             return output;
         }
 
+        public IEnumerable<object?> GetRecordsList(int [] ids, Tables tableOption)
+        {
+            string sql = @$"USE MusicBrainz;
+                            SELECT *
+                            FROM {tableOption}
+                            WHERE Id in (";
+
+            StringBuilder sqlBuilder = new(sql);
+
+            sqlBuilder.AppendJoin(", ", ids);
+
+            sqlBuilder.Append(");");
+
+            sql = sqlBuilder.ToString();
+
+            SqlDataReader? reader;
+
+            IEnumerable<object?> output = default;
+            
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = connection;
+
+                        cmd.CommandText = sql;
+
+                        reader = cmd.ExecuteReader();
+
+                        switch (tableOption)
+                        {
+                            case Tables.Area:
+                                output = reader.Select(AreaFromReader);
+                                break;
+
+                            case Tables.Artist:
+                                output = reader.Select(ArtistFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Label:
+                                output = reader.Select(LabelFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Place:
+                                output = reader.Select(PlaceFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Recording:
+                                output = reader.Select(RecordingFromReader);
+                                break;
+
+                            case Tables.Release:
+                                output = reader.Select(ReleaseFromReader, GetRecordById);
+                                break;
+
+                            case Tables.ReleaseGroup:
+                                output = reader.Select(ReleaseGroupFromReader);
+                                break;
+
+                            case Tables.Url:
+                                output = reader.Select(UrlFromReader);
+                                break;
+
+                            case Tables.Work:
+                                output = reader.Select(WorkFromReader);
+                                break;
+                        }
+                        output = output.ToArray();
+                        return output;
+                    }
+                }
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -381,6 +478,40 @@ namespace MusicBrainz.DAL
                         cmd.CommandText = sql;
 
                         reader = cmd.ExecuteReader();
+
+                        /*!!!!!!!!!!!!!experiment start
+                        var outputCol = new List<List<int>>();
+
+                        var testDel = delegate (IDataReader reader)
+                        {
+                            List<int> foreignKeys = new();
+
+                            string [] typesNames = Enum.GetNames(typeof(Tables));
+
+                            var fieldNames = Enumerable.Range(0, reader.FieldCount)
+                                .Select(reader.GetName)
+                                .ToArray();
+
+                            foreach (string fieldName in fieldNames)
+                            {
+                                if (typesNames.Contains(fieldName))
+                                {
+                                    foreignKeys.Add((int) reader [fieldName]);
+                                }
+                            }
+                            outputCol.Add(foreignKeys);
+                        };
+
+
+                        var test2 = delegate (IDataReader reader)
+                        {
+                            return new List<int?>(new int? [] { (int?) reader ["Area"], (int?) reader [""] });
+                        };
+
+                        
+                         * !!!!!!!!!!!!experiment end
+                         * 
+                         */
 
                         switch (tableOption)
                         {
