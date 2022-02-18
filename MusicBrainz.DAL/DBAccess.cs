@@ -137,19 +137,19 @@ namespace MusicBrainz.DAL
         /// <exception cref="SqlException"></exception>
         public IList<ITableInfo> GetTablesInfo()
         {
-            string sql = @"USE MusicBrainz;
-                            SELECT
-                               # = ROW_NUMBER() OVER (
-                            ORDER BY
-                               t.TABLE_NAME),
-                               t.TABLE_NAME as Name
-                            FROM
-                               INFORMATION_SCHEMA.TABLES t
-                            WHERE
-                               TABLE_TYPE = 'BASE TABLE'
-                               AND t.TABLE_NAME != 'sysdiagrams'
-                            Order by
-                               t.TABLE_NAME;";
+            string sql = @"select 
+                          t.name TableName, 
+                          i.rows Records 
+                        from 
+                          sysobjects t, 
+                          sysindexes i 
+                        where 
+                          t.xtype = 'U' 
+                          and i.id = t.id 
+                          and i.indid in (0, 1) 
+                          and t.name not like 'sys%' 
+                        order by 
+                          TableName;";
 
             SqlDataReader? reader;
 
@@ -194,6 +194,14 @@ namespace MusicBrainz.DAL
             return output;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="tableOption"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="SqlException"></exception>
         public IEnumerable<object?> GetRecordsList(int [] ids, Tables tableOption)
         {
             string sql = @$"USE MusicBrainz;
@@ -212,7 +220,7 @@ namespace MusicBrainz.DAL
             SqlDataReader? reader;
 
             IEnumerable<object?> output = default;
-            
+
             try
             {
                 using (var connection = new SqlConnection(_connectionString))
@@ -330,6 +338,8 @@ namespace MusicBrainz.DAL
         /// <param name="id"></param>
         /// <param name="tableOption"></param>
         /// <returns>An entity-object</returns>
+        /// <exception cref="SqlException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public object? GetRecordById(int id, Tables tableOption)
         {
             string sql = @$"USE MusicBrainz;

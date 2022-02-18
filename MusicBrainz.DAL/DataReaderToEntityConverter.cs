@@ -261,8 +261,8 @@ namespace MusicBrainz.DAL
         {
             DbTableInfo tableInfo = new()
             {
-                Name = (Tables) Enum.Parse(typeof(Tables), (string) reader ["Name"]),
-                NumberOfRecords = null
+                Name = (Tables) Enum.Parse(typeof(Tables), (string) reader ["TableName"]),
+                NumberOfRecords = (int)reader ["Records"]
             };
 
             return tableInfo;
