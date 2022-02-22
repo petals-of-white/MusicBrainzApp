@@ -14,6 +14,11 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         private DbExportImportConfig? _config;
 
+        private DbImportConfig _importConfig;
+
+
+        private DbExportConfig _exportConfig;
+
         public DbEntitiesSerializer(DbExportImportConfig config)
         {
             _config = config;
@@ -21,19 +26,38 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         public DbEntitiesSerializer()
         {
+        }
 
+        public DbEntitiesSerializer(DbImportConfig importConfig, DbExportConfig exportConfig)
+        {
+            _importConfig = importConfig;
+            _exportConfig = exportConfig;
+        }
+
+        public DbEntitiesSerializer(ISerializationManager serializationManager)
+        {
+            _serializationManager = serializationManager;
+        }
+
+        public void ConfigureExport(DbExportConfig exportConfig)
+        {
+            _exportConfig = exportConfig;
+
+        }
+        public void ConfigureImport(DbImportConfig importConfig)
+        {
+            _importConfig = importConfig;
         }
 
         public Dictionary<Tables, string> SerializeTabelEntitiesTypeMapped()
         {
-
             Dictionary<Tables, string> serializedOutput = new();
             string serializedEntities;
 
-            int? recordsPerPage = _config.RecordsPerPage;
-            int? pageNumber = _config.PageNumber;
+            int? recordsPerPage = _exportConfig.RecordsPerPage;
+            int? pageNumber = _exportConfig.PageNumber;
 
-            foreach (var table in _config.TablesToExport)
+            foreach (var table in _exportConfig.TablesToExport)
             {
                 ICollection<TableEntity> entities = new List<TableEntity>();
 
@@ -92,10 +116,10 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         {
             Dictionary<Tables, string> serializedOutput = new();
 
-            foreach (var table in _config.TablesToExport)
+            foreach (var table in _exportConfig.TablesToExport)
             {
                 // get entities list
-                var entities = _entityImporterExporter.Export(table, _config.RecordsPerPage, _config.PageNumber);
+                var entities = _entityImporterExporter.Export(table, _exportConfig.RecordsPerPage, _exportConfig.PageNumber);
 
                 //serialize them to json
                 string serializedEntities = _serializationManager.Serialize(entities);
@@ -118,7 +142,7 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         public void ImportSerializedTableEntities()
         {
-            foreach (var importableTableEntities in _config.EntitiesToImport)
+            foreach (var importableTableEntities in _importConfig.EntitiesToImport)
             {
                 switch (importableTableEntities.Key)
                 {
@@ -163,56 +187,64 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         public void ImportSerializedTableEntitiesNew()
         {
-            foreach (var importableTableEntities in _config.SerializedEntitiesToImport)
+
+            foreach (var importableTableEntities in _importConfig.SerializedEntitiesToImport)
             {
                 switch (importableTableEntities.Key)
                 {
                     case Tables.Area:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Area>>(importableTableEntities.Value));
+                            .Deserialize<List<Area>>(importableTableEntities.Value)!);
                         break;
 
                     case Tables.Artist:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Artist>>(importableTableEntities.Value));
+                            .Deserialize<List<Artist>>(importableTableEntities.Value)!);
                         break;
 
                     case Tables.Label:
                         _entityImporterExporter.Import(
-                                                    _serializationManager
-                                                    .Deserialize<List<Label>>(importableTableEntities.Value)); break;
+                            _serializationManager
+                            .Deserialize<List<Label>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.Recording:
                         _entityImporterExporter.Import(
-                                                    _serializationManager
-                                                    .Deserialize<List<Recording>>(importableTableEntities.Value)); break;
+                            _serializationManager
+                            .Deserialize<List<Recording>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.Place:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Place>>(importableTableEntities.Value)); break;
+                            .Deserialize<List<Place>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.Release:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Release>>(importableTableEntities.Value)); break;
+                            .Deserialize<List<Release>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.ReleaseGroup:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<ReleaseGroup>>(importableTableEntities.Value)); break;
+                            .Deserialize<List<ReleaseGroup>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.Work:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Work>>(importableTableEntities.Value)); break;
+                            .Deserialize<List<Work>>(importableTableEntities.Value)!);
+                        break;
 
                     case Tables.Url:
                         _entityImporterExporter.Import(
                             _serializationManager
-                            .Deserialize<List<Url>>(importableTableEntities.Value)); break;
+                            .Deserialize<List<Url>>(importableTableEntities.Value)!);
+                        break;
                 }
             }
         }

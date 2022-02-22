@@ -18,7 +18,10 @@ namespace MusicBrainz.ConsoleUI
             Export,
             Import
         }
-        private static DbExportImportConfig _config = new();
+        //private static DbExportImportConfig _config = new();
+        private static DbExportConfig _exportConfig = new();
+
+        private static DbImportConfig _importConfig = new();
 
         private static DbEntitiesSerializer _mainSerializer = new();
 
@@ -54,7 +57,7 @@ namespace MusicBrainz.ConsoleUI
             Console.WriteLine("".PadRight(defaultPadding * 3, '='));
         }
 
-        internal static void AskForAction()
+        internal static void SelectAction()
         {
             Console.Write("Would you like to export or import the tables ('i' or 'e')? ");
             string mode = Console.ReadLine()!;
@@ -64,11 +67,17 @@ namespace MusicBrainz.ConsoleUI
                 case "i" or "import":
                     _mode = Mode.Import;
                     Console.WriteLine("Import mode!");
+
+                    SelectTablesToImport();
+
                     break;
 
                 case "e" or "export":
                     _mode = Mode.Export;
                     Console.WriteLine("Export mode!");
+
+                    SelectTablesToExport();
+                    AskForPagination();
                     break;
 
                 default:
@@ -94,7 +103,7 @@ namespace MusicBrainz.ConsoleUI
 
                 if (input == "*")
                 {
-                    _config.AddTableToExport((Tables []) Enum.GetValues(typeof(Tables)));
+                    _exportConfig.AddTableToExport((Tables []) Enum.GetValues(typeof(Tables)));
 
                     Console.WriteLine("All the tables are going be exported.");
 
@@ -125,11 +134,7 @@ namespace MusicBrainz.ConsoleUI
 
                             if (tableNumbersInValidRange)
                             {
-                                //foreach (int tableNumber in tablesNumbers)
-                                //{
-                                //    _config.AddTableToExport();
-                                //}
-                                _config.AddTableToExport((Tables []) (object) tablesNumbers);
+                                _exportConfig.AddTableToExport((Tables []) (object) tablesNumbers);
                             }
 
                             else
@@ -152,7 +157,6 @@ namespace MusicBrainz.ConsoleUI
                         catch (ArgumentOutOfRangeException ex)
                         {
                             _logger.Log(ex.ToString());
-
                             Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
 
                             break;
@@ -169,7 +173,6 @@ namespace MusicBrainz.ConsoleUI
                         catch (OverflowException ex)
                         {
                             _logger.Log(ex.ToString());
-
                             Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
                             break;
 
@@ -210,20 +213,16 @@ namespace MusicBrainz.ConsoleUI
                     }
 
                     // enables pagination and sets page number
-                    _config.EnablePaging(recordsPerPage, pageNumber);
+                    _exportConfig.EnablePaging(recordsPerPage, pageNumber);
 
                     Console.WriteLine($"The pagination will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
-
                     break;
 
-
                 case "no" or "n":
-
                     Console.WriteLine("The pagination will be disabled.");
                     break;
 
                 default:
-
                     Console.WriteLine("The pagination will be disabled.");
                     break;
             }
@@ -252,7 +251,6 @@ namespace MusicBrainz.ConsoleUI
                 };
             }
         }
-
 
         /// <summary>
         /// 
