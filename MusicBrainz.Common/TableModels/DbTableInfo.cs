@@ -2,6 +2,7 @@
 
 namespace MusicBrainz.Common.TableModels
 {
+
     public class DbTableInfo : ITableInfo
     {
         public Tables Name { get; init; }

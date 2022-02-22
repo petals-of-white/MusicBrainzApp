@@ -2,7 +2,7 @@
 {
     public enum Tables : int
     {
-        Area,
+        Area = 1,
         Artist,
         Label,
         Place,
