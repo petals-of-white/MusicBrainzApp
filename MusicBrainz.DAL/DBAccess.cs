@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Text;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
@@ -12,9 +13,9 @@ namespace MusicBrainz.DAL
 {
     public class DbAccess
     {
-        protected LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
+        private LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
-        protected string _connectionString = ConfigHelper.GetConnectionString();
+        private string _connectionString = ConfigHelper.GetConnectionString();
 
         /// <summary>
         /// 
@@ -24,8 +25,7 @@ namespace MusicBrainz.DAL
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
         /// 
-
-        protected DataTable GetQueryResult(string sql)
+        private DataTable GetQueryResult(string sql)
         {
             DataTable output = new();
             SqlDataReader? reader;
@@ -70,6 +70,40 @@ namespace MusicBrainz.DAL
 
         }
 
+        /// <summary>
+        /// Inserts a new records to a correspoding table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities"></param>
+        public void InsertEntities<T>(ICollection<T> entities) where T : TableEntity
+        {
+            Type entityType = typeof(T);
+            DynamicParameters entityParams;
+
+
+            string storedProcedureName = $"spInsert{entityType.Name}";
+
+            using (SqlConnection connection = new(_connectionString))
+            {
+                foreach (T entity in entities)
+                {
+
+                    entityParams = new DynamicParameters();
+                    foreach (var property in entityType.GetProperties().Where(x => x.Name != "Id"))
+                    {
+                        entityParams.Add(property.Name, property.GetValue(entity));
+                    }
+
+
+                    // executing stored procedure
+
+
+                    int affectedRows = connection.Execute(sql: storedProcedureName, param: entityParams, commandType: CommandType.StoredProcedure);
+                }
+            }
+        }
+
+        // to be removed later !!!
         private readonly HashSet<Type> _allTypes = new()
         {
             typeof(Area),
@@ -82,6 +116,16 @@ namespace MusicBrainz.DAL
             typeof(Url),
             typeof(Place),
         };
+
+        public void InsertEntities(Tables table, IEnumerable<object> entities)
+        {
+            using SqlConnection connection = new();
+
+            string storedProcedure = $"";
+            connection.Execute("", commandType: CommandType.StoredProcedure);
+
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 
@@ -135,7 +179,7 @@ namespace MusicBrainz.DAL
         /// <returns>A list of DbTableInfo instances</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
-        public IList<ITableInfo> GetTablesInfo()
+        public IList<ITableInfo> GetDbTablesInfo()
         {
             string sql = @"select 
                           t.name TableName, 
@@ -305,11 +349,14 @@ namespace MusicBrainz.DAL
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
         /// /// <exception cref="Exception"></exception>
-        public T? GetRecordById<T>(int id) where T : new()
+        public T? GetRecordById<T>(int id) where T : TableEntity
         {
+            T? output = default;
+
             Type entityType = typeof(T);
 
-            T? result = default;
+            SqlDataReader? reader;
+
             string entityTypeName = entityType.Name;
 
             string sql = @$"USE MusicBrainz;
@@ -321,7 +368,27 @@ namespace MusicBrainz.DAL
 
             try
             {
-                result = GetQueryResult(sql).Rows [0].ToObject<T>();
+                using (SqlConnection connection = new(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new())
+                    {
+                        command.Connection = connection;
+
+                        command.CommandText = sql;
+
+                        reader = command.ExecuteReader();
+
+                        if (reader.Read())
+
+                        {
+                            output = reader.Select<T>(GetRecordById).FirstOrDefault();
+
+                        }
+
+                    }
+                }
             }
 
             catch (IndexOutOfRangeException ex)
@@ -329,7 +396,7 @@ namespace MusicBrainz.DAL
                 _logger.Log(ex.ToString());
             }
 
-            return result;
+            return output;
         }
 
         /// <summary>
@@ -437,11 +504,12 @@ namespace MusicBrainz.DAL
         /// <param name="pageNumber"></param>
         /// <returns>An IEnumerable of entities objects</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IEnumerable<object> GetTableRecords(Tables tableOption, int? recordsPerPage = null, int? pageNumber = null)
+        public ICollection<object> GetTableRecords(Tables tableOption, int? recordsPerPage = null, int? pageNumber = null)
         {
             SqlDataReader? reader;
             string sql;
-            IEnumerable<object> output = default;
+            IEnumerable<object> enumerableRawResult = default;
+            ICollection<object> output = default;
 
             if (recordsPerPage is null || pageNumber is null)
             {
@@ -526,42 +594,245 @@ namespace MusicBrainz.DAL
                         switch (tableOption)
                         {
                             case Tables.Area:
-                                output = reader.Select(AreaFromReader);
+                                enumerableRawResult = reader.Select(AreaFromReader);
                                 break;
 
                             case Tables.Artist:
-                                output = reader.Select(ArtistFromReader, GetRecordById);
+                                enumerableRawResult = reader.Select(ArtistFromReader, GetRecordById);
                                 break;
 
                             case Tables.Label:
-                                output = reader.Select(LabelFromReader, GetRecordById);
+                                enumerableRawResult = reader.Select(LabelFromReader, GetRecordById);
                                 break;
 
                             case Tables.Place:
-                                output = reader.Select(PlaceFromReader, GetRecordById);
+                                enumerableRawResult = reader.Select(PlaceFromReader, GetRecordById);
                                 break;
 
                             case Tables.Recording:
-                                output = reader.Select(RecordingFromReader);
+                                enumerableRawResult = reader.Select(RecordingFromReader);
                                 break;
 
                             case Tables.Release:
-                                output = reader.Select(ReleaseFromReader, GetRecordById);
+                                enumerableRawResult = reader.Select(ReleaseFromReader, GetRecordById);
                                 break;
 
                             case Tables.ReleaseGroup:
-                                output = reader.Select(ReleaseGroupFromReader);
+                                enumerableRawResult = reader.Select(ReleaseGroupFromReader);
                                 break;
 
                             case Tables.Url:
-                                output = reader.Select(UrlFromReader);
+                                enumerableRawResult = reader.Select(UrlFromReader);
                                 break;
 
                             case Tables.Work:
-                                output = reader.Select(WorkFromReader);
+                                enumerableRawResult = reader.Select(WorkFromReader);
                                 break;
                         }
-                        output = output.ToList();
+                        output = enumerableRawResult!.ToList();
+                    }
+                }
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            return output;
+        }
+
+        public ICollection<T> GetTableRecordsGenericMapDefault<T>(int? recordsPerPage = null, int? pageNumber = null) where T : TableEntity
+        {
+            Type table = typeof(T);
+
+            List<T> output = default;
+
+            object rawOutput = default;
+
+            string sql;
+            SqlDataReader? reader;
+
+
+            if (recordsPerPage is null || pageNumber is null)
+            {
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               * 
+                            FROM
+                               {table.Name};";
+            }
+
+            else
+            {
+                if (recordsPerPage < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
+                }
+
+                if (pageNumber < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
+                }
+
+                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
+
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               * 
+                            FROM
+                               {table.Name}
+                            ORDER BY Id
+                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand cmd = new())
+                    {
+                        cmd.Connection = connection;
+
+                        cmd.CommandText = sql;
+
+                        reader = cmd.ExecuteReader();
+
+                        if (table == typeof(Area))
+                        {
+                            rawOutput = reader.Select(AreaFromReader);
+                        }
+                        else if (table == typeof(Artist))
+                        {
+                            rawOutput = reader.Select(ArtistFromReader, GetRecordById);
+                        }
+                        else if (table == typeof(Label))
+                        {
+                            rawOutput = reader.Select(LabelFromReader, GetRecordById);
+                        }
+                        else if (table == typeof(Place))
+                        {
+                            rawOutput = reader.Select(PlaceFromReader, GetRecordById);
+                        }
+                        else if (table == typeof(Recording))
+                        {
+                            rawOutput = reader.Select(RecordingFromReader);
+                        }
+                        else if (table == typeof(Release))
+                        {
+                            rawOutput = reader.Select(ReleaseFromReader, GetRecordById);
+                        }
+                        else if (table == typeof(ReleaseGroup))
+                        {
+                            rawOutput = reader.Select(ReleaseGroupFromReader);
+                        }
+                        else if (table == typeof(Url))
+                        {
+                            rawOutput = reader.Select(UrlFromReader);
+                        }
+                        else if (table == typeof(Work))
+                        {
+                            rawOutput = reader.Select(WorkFromReader);
+                        }
+
+                        output = ((IEnumerable<T>) rawOutput!).ToList();
+                    }
+                }
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            return output;
+        }
+
+        public ICollection<T> GetTableRecordsGenericMapProperties<T>(int? recordsPerPage = null, int? pageNumber = null) where T : TableEntity
+        {
+            Type table = typeof(T);
+
+            List<T> output = default;
+
+            string sql;
+            SqlDataReader? reader;
+
+
+            if (recordsPerPage is null || pageNumber is null)
+            {
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               * 
+                            FROM
+                               {table.Name};";
+            }
+
+            else
+            {
+                if (recordsPerPage < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
+                }
+
+                if (pageNumber < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
+                }
+
+                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
+
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               * 
+                            FROM
+                               {table.Name}
+                            ORDER BY Id
+                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand cmd = new())
+                    {
+                        cmd.Connection = connection;
+
+                        cmd.CommandText = sql;
+
+                        reader = cmd.ExecuteReader();
+
+                        output = reader.Select<T>(GetRecordById).ToList();
                     }
                 }
             }
@@ -720,5 +991,8 @@ namespace MusicBrainz.DAL
 
             return entitiesList;
         }
+
+
+
     }
 }

@@ -16,19 +16,5 @@ namespace MusicBrainz.DAL.Legacy
             typeof(Url),
             typeof(Place),
         };
-        //public enum AvailableTables : int
-        //{
-        //    Area,
-        //    Artist,
-        //    Label,
-        //    Place,
-        //    Recording,
-        //    Release,
-        //    ReleaseGroup,
-        //    Url,
-        //    Work
-        //}
-
     }
-
 }
