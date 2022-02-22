@@ -2,7 +2,7 @@
 
 namespace MusicBrainz.Common.Entities
 {
-    public class Label
+    public class Label : TableEntity
     {
         [Key]
         public int Id { get; set; }
