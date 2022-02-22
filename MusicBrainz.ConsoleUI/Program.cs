@@ -4,7 +4,7 @@ UserMessages.GreetUser();
 
 UserMessages.ShowAllTablesAndNumberOfRecords();
 
-UserMessages.PromptSelect();
+UserMessages.SelectTablesToExport();
 
 UserMessages.AskForPagination();
 

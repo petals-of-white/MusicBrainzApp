@@ -1,64 +1,100 @@
 ﻿using Microsoft.Data.SqlClient;
+using MusicBrainz.BLL.DbEntitySerialization;
 using MusicBrainz.BLL.Exceptions;
 using MusicBrainz.BLL.Exporting;
+using MusicBrainz.Common.Enums;
 using MusicBrainz.Common.TableModels;
+using MusicBrainz.Tools.Config;
 using MusicBrainz.Tools.Logging;
 
 namespace MusicBrainz.ConsoleUI
 {
     internal static class UserMessages
     {
-        private static TableToJsonExporterBuilder _exporterBuilder = new();
+        [Flags]
+        internal enum Mode
+        {
+            None,
+            Export,
+            Import
+        }
+        private static DbExportImportConfig _config = new();
 
-        private static IList<DbTableInfo> _tables = _exporterBuilder.GetTableInfo();
+        private static DbEntitiesSerializer _mainSerializer = new();
+
+        private static IList<ITableInfo> _tables = _mainSerializer.GetTablesInfo();
 
         private static LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
+        private static Mode _mode = Mode.None;
+
         internal static void GreetUser()
         {
-            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON. Here are the tables:");
+            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON files. Here are the tables:");
         }
 
         internal static void ShowAllTablesAndNumberOfRecords()
         {
-
-            const short defaultPadding = 15;
+            const short defaultPadding = 16;
 
             Console.WriteLine("#".PadRight(defaultPadding) + "Table name".PadRight(defaultPadding) + "Number of records".PadRight(defaultPadding));
 
             Console.WriteLine("".PadRight(defaultPadding * 3, '='));
 
-            //var tables = _exporterBuilder.GetTableInfo();
+            //for (int i = 0; i < _tables.Count; i++)
+            //{
+            //    Console.WriteLine($"{i + 1,-defaultPadding}{_tables [i].Name,-defaultPadding}{_tables [i].NumberOfRecords,-defaultPadding}");
+            //}
 
-            for (int i = 0; i < _tables.Count; i++)
+            foreach (ITableInfo tableInfo in _tables)
             {
-                Console.WriteLine($"{i + 1,-defaultPadding}{_tables [i].Name,-defaultPadding}{_tables [i].NumberOfRecords,-defaultPadding}");
-
+                Console.WriteLine($"{(int) tableInfo.Name,-defaultPadding}{tableInfo.Name,-defaultPadding}{tableInfo.NumberOfRecords,-defaultPadding}");
             }
 
             Console.WriteLine("".PadRight(defaultPadding * 3, '='));
-
         }
 
-        internal static void PromptSelect()
+        internal static void AskForAction()
+        {
+            Console.Write("Would you like to export or import the tables ('i' or 'e')? ");
+            string mode = Console.ReadLine()!;
+
+            switch (mode.ToLower())
+            {
+                case "i" or "import":
+                    _mode = Mode.Import;
+                    Console.WriteLine("Import mode!");
+                    break;
+
+                case "e" or "export":
+                    _mode = Mode.Export;
+                    Console.WriteLine("Export mode!");
+                    break;
+
+                default:
+                    _mode = Mode.Export;
+                    Console.WriteLine("Export mode!");
+                    break;
+            }
+        }
+
+        internal static void SelectTablesToExport()
         {
             string? input;
 
             Console.WriteLine("To select a table you want to export, please enter a corresponding number of a table. (e.g. '1' or '3'). " +
-                "You can also select multiple tables, separated by space (e.g. '1 5 6 8'). To export all the tables, enter '*'");
+                "You can also select multiple tables by entering their numbers separated by space (e.g. '1 5 6 8'). To export all the tables, enter '*'");
 
             Console.Write("Your choice: ");
 
             bool proceedFurther = false;
-            //while (true)
             while (proceedFurther == false)
             {
                 input = Console.ReadLine();
 
-
                 if (input == "*")
                 {
-                    _exporterBuilder.UseAllTables();
+                    _config.AddTableToExport((Tables []) Enum.GetValues(typeof(Tables)));
 
                     Console.WriteLine("All the tables are going be exported.");
 
@@ -69,7 +105,8 @@ namespace MusicBrainz.ConsoleUI
 
                 else
                 {
-                    string [] splitInput = input.Split(' ', StringSplitOptions.RemoveEmptyEntries & StringSplitOptions.TrimEntries);
+                    string [] splitInput = input.Split(' ',
+                        StringSplitOptions.RemoveEmptyEntries & StringSplitOptions.TrimEntries);
 
                     while (true)
                     {
@@ -78,22 +115,27 @@ namespace MusicBrainz.ConsoleUI
                             // only distinct values
                             int [] tablesNumbers = Array.ConvertAll(splitInput, int.Parse).Distinct().ToArray();
 
+                            // all available enum values
+                            int [] tablesEnums = ((int []) Enum.GetValues(typeof(Tables)));
+
                             // check whether all values are in range
-                            bool tableNumbersInValidRange = tablesNumbers.All(x => x > 0 && x <= _tables.Count);
+                            //bool tableNumbersInValidRange = tablesNumbers.All(x => x > 0 && x <= _tables.Count);
+                            bool tableNumbersInValidRange = tablesNumbers.All(
+                                x => tablesEnums.Contains(x));
 
                             if (tableNumbersInValidRange)
                             {
-                                foreach (int tableNumber in tablesNumbers)
-                                {
-                                    _exporterBuilder.UseTable(_tables [tableNumber - 1].Name);
-                                }
+                                //foreach (int tableNumber in tablesNumbers)
+                                //{
+                                //    _config.AddTableToExport();
+                                //}
+                                _config.AddTableToExport((Tables []) (object) tablesNumbers);
                             }
 
                             else
                             {
                                 throw new ArgumentOutOfRangeException(nameof(tablesNumbers), $"Table numbers value were not in the range of {1}..{_tables.Count}");
                             }
-
 
                             proceedFurther = true;
 
@@ -141,7 +183,7 @@ namespace MusicBrainz.ConsoleUI
         {
 
             Console.Write("Would you like to enable pagination ( yes / no or y / n)? ");
-            string answer = Console.ReadLine();
+            string answer = Console.ReadLine()!;
 
             switch (answer)
             {
@@ -150,7 +192,9 @@ namespace MusicBrainz.ConsoleUI
                     int pageNumber, recordsPerPage;
 
                     // Set records per page
+
                     Console.Write("How many records must a page contain? ");
+
                     while (int.TryParse(Console.ReadLine(), out recordsPerPage) == false || recordsPerPage < 1)
                     {
                         Console.WriteLine("The input data is wrong.");
@@ -166,16 +210,8 @@ namespace MusicBrainz.ConsoleUI
                     }
 
                     // enables pagination and sets page number
-                    try
-                    {
-                        _exporterBuilder.EnablePagination(recordsPerPage, pageNumber);
-                    }
+                    _config.EnablePaging(recordsPerPage, pageNumber);
 
-                    catch (UserFriendlyException ex)
-                    {
-                        _logger.Log(ex.ToString());
-                        Console.WriteLine(ex.Message);
-                    }
                     Console.WriteLine($"The pagination will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
 
                     break;
@@ -190,6 +226,30 @@ namespace MusicBrainz.ConsoleUI
 
                     Console.WriteLine("The pagination will be disabled.");
                     break;
+            }
+        }
+
+        internal static void SelectTablesToImport()
+        {
+            string pathToImportFolder = ConfigHelper.GetImportFolder();
+            Directory.CreateDirectory(pathToImportFolder);
+
+            var files = from fileName in Enum.GetNames(typeof(Tables))
+                        select Path.Combine(pathToImportFolder, fileName + ".json");
+
+            Console.WriteLine($"Here are the JSON files we've found in your local '{pathToImportFolder}' folder:");
+
+            foreach (string filePath in files)
+            {
+                Action kek = File.Exists(filePath)
+
+                    ? delegate ()
+                    {
+                        File.WriteAllText(filePath, "[ ]");
+                    }
+                : delegate ()
+                {
+                };
             }
         }
 
