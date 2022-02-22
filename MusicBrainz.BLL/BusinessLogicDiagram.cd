@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="MusicBrainz.BLL.DbEntitySerialization.DbExportImportConfig">
-    <Position X="8.5" Y="5.75" Width="2.75" />
+    <Position X="3.25" Y="9.25" Width="4.75" />
     <TypeIdentifier>
-      <HashCode>AACAAAAIACAAAAAAAAAAAgAAAAAAAAIABAAAAAAAAAA=</HashCode>
+      <HashCode>AACAAAAIACAAAAACAAAAAgAAAAAAAAIABAAAAAAAEAA=</HashCode>
       <FileName>DbEntitySerialization\DbEntityExportConfig.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MusicBrainz.BLL.DbEntitySerialization.DbEntitiesSerializer">
-    <Position X="4.5" Y="6.25" Width="3" />
+    <Position X="3.75" Y="6.25" Width="3.75" />
     <TypeIdentifier>
-      <HashCode>AAAIAACAAAAAAAAAAAAEAACAAAEAAAAAAAAAAAAEAAA=</HashCode>
+      <HashCode>AAAIAACAAAAAAAAAAAAEAACAAAEBAAAAAAAAAAAEAAA=</HashCode>
       <FileName>DbEntitySerialization\DbEntitySerializer.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_config" />
       <Field Name="_entityImporterExporter" />
       <Field Name="_serializationManager" />
+      <Field Name="_config" />
     </ShowAsAssociation>
   </Class>
   <Class Name="MusicBrainz.BLL.DbEntitySerialization.Serialization.JsonSerializationManager" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="12.25" Y="1.75" Width="2.25" />
+    <Position X="12.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\Serialization\JsonSerializationManager.cs</FileName>
@@ -28,7 +28,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="MusicBrainz.BLL.DbEntitySerialization.DataTransfer.DbEntityImporterExporter" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="6" Width="2.75" />
+    <Position X="7.75" Y="2.75" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAAAIAAEBAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\DataTransfer\DbEntityImporterExporter.cs</FileName>
@@ -36,35 +36,35 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="MusicBrainz.BLL.DbEntitySerialization.Serialization.ISerializationManager">
-    <Position X="5" Y="9.25" Width="2" />
+    <Position X="0.5" Y="6" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\Serialization\ISerializationManager.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MusicBrainz.BLL.DbEntitySerialization.DataTransfer.IDbEntityExporter" Collapsed="true">
-    <Position X="6.25" Y="1.75" Width="1.75" />
+    <Position X="5.25" Y="1.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\DataTransfer\IDbEntityExporter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MusicBrainz.BLL.DbEntitySerialization.DataTransfer.IDbEntityImporter" Collapsed="true">
-    <Position X="3.25" Y="1.75" Width="1.75" />
+    <Position X="2.25" Y="1.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\DataTransfer\IDbEntityImporter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MusicBrainz.BLL.DbEntitySerialization.DataTransfer.IDbEntityImporterExporter" Collapsed="true">
-    <Position X="3" Y="3" Width="2.25" />
+    <Position X="2" Y="3" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\DataTransfer\IDbEntityImporterExporter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MusicBrainz.BLL.DbEntitySerialization.DataTransfer.IDbTablesInfoGetter" Collapsed="true">
-    <Position X="12.25" Y="3" Width="1.75" />
+    <Position X="12.25" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbEntitySerialization\DataTransfer\IDbTablesInfoGetter.cs</FileName>
