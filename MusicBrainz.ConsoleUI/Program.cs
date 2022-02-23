@@ -1,15 +1,13 @@
 ﻿using MusicBrainz.ConsoleUI;
 
-UserMessages.GreetUser();
+MainFlow.GreetUser();
 
-UserMessages.ShowAllTablesAndNumberOfRecords();
+MainFlow.ShowAllTablesAndNumberOfRecords();
 
-UserMessages.SelectTablesToExport();
+MainFlow.SelectAction();
 
-UserMessages.AskForPagination();
+MainFlow.ConfirmResult();
 
-UserMessages.ConfirmResult();
-
-UserMessages.SayGoodbye();
+MainFlow.SayGoodbye();
 
 Console.ReadKey();
