@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MusicBrainz.Common.Entities;
+﻿using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
 
 namespace MusicBrainz.BLL.DbEntitySerialization
@@ -14,14 +10,15 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         public Dictionary<Tables, string> SerializedEntitiesToImport { get; private set; } =
                    new Dictionary<Tables, string>();
+
         public void AddEntitiesToImport(Tables table, ICollection<TableEntity> entities)
         {
             EntitiesToImport.Add(table, entities);
         }
 
-        public void AddEntitiesToImport(Tables table, string jsonObject)
+        public void AddEntitiesToImport(Tables table, string serializedEntitiesList)
         {
-            SerializedEntitiesToImport.Add(table, jsonObject);
+            SerializedEntitiesToImport.Add(table, serializedEntitiesList);
         }
     }
 }

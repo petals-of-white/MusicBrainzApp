@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MusicBrainz.Common.Enums;
+﻿using MusicBrainz.Common.Enums;
 
 namespace MusicBrainz.BLL.DbEntitySerialization
 {

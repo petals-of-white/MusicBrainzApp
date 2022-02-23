@@ -14,10 +14,9 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         private DbExportImportConfig? _config;
 
-        private DbImportConfig _importConfig;
-
-
         private DbExportConfig _exportConfig;
+
+        private DbImportConfig _importConfig;
 
         public DbEntitiesSerializer(DbExportImportConfig config)
         {
@@ -42,97 +41,11 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         public void ConfigureExport(DbExportConfig exportConfig)
         {
             _exportConfig = exportConfig;
-
         }
+
         public void ConfigureImport(DbImportConfig importConfig)
         {
             _importConfig = importConfig;
-        }
-
-        public Dictionary<Tables, string> SerializeTabelEntitiesTypeMapped()
-        {
-            Dictionary<Tables, string> serializedOutput = new();
-            string serializedEntities;
-
-            int? recordsPerPage = _exportConfig.RecordsPerPage;
-            int? pageNumber = _exportConfig.PageNumber;
-
-            foreach (var table in _exportConfig.TablesToExport)
-            {
-                ICollection<TableEntity> entities = new List<TableEntity>();
-
-                switch (table)
-                {
-                    case Tables.Area:
-                        entities = _entityImporterExporter.Export<Area>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Artist:
-                        entities = _entityImporterExporter.Export<Artist>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Label:
-                        entities = _entityImporterExporter.Export<Label>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Place:
-                        entities = _entityImporterExporter.Export<Place>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Recording:
-                        entities = _entityImporterExporter.Export<Recording>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList(); ;
-                        break;
-
-                    case Tables.Release:
-                        entities = _entityImporterExporter.Export<Release>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.ReleaseGroup:
-                        entities = _entityImporterExporter.Export<ReleaseGroup>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Work:
-                        entities = _entityImporterExporter.Export<Work>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-
-                    case Tables.Url:
-                        entities = _entityImporterExporter.Export<Url>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
-                        break;
-                }
-
-                //serialize them to json
-                serializedEntities = _serializationManager.Serialize(entities);
-
-                serializedOutput.Add(table, serializedEntities);
-            }
-            return serializedOutput;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>A Dictionary with Table enum as key and serialized entities as values</returns>
-        public Dictionary<Tables, string> SerializeTableEntities()
-        {
-            Dictionary<Tables, string> serializedOutput = new();
-
-            foreach (var table in _exportConfig.TablesToExport)
-            {
-                // get entities list
-                var entities = _entityImporterExporter.Export(table, _exportConfig.RecordsPerPage, _exportConfig.PageNumber);
-
-                //serialize them to json
-                string serializedEntities = _serializationManager.Serialize(entities);
-
-                serializedOutput.Add(table, serializedEntities);
-
-                //var directory = Directory.CreateDirectory("export").Name;
-                //var fileName = $"{table}.json";
-                //string fullPath = Path.Combine(directory, fileName);
-
-                //File.WriteAllText(fullPath, serializedEntities);
-            }
-            return serializedOutput;
         }
 
         public IList<ITableInfo> GetTablesInfo()
@@ -187,7 +100,6 @@ namespace MusicBrainz.BLL.DbEntitySerialization
 
         public void ImportSerializedTableEntitiesNew()
         {
-
             foreach (var importableTableEntities in _importConfig.SerializedEntitiesToImport)
             {
                 switch (importableTableEntities.Key)
@@ -249,5 +161,90 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             }
         }
 
+        public (Dictionary<Tables, string> serializedEntities, string format) SerializeTabelEntitiesTypeMapped()
+        {
+            Dictionary<Tables, string> serializedOutput = new();
+            string serializedEntities;
+
+            int? recordsPerPage = _exportConfig.RecordsPerPage;
+            int? pageNumber = _exportConfig.PageNumber;
+
+            foreach (var table in _exportConfig.TablesToExport)
+            {
+                ICollection<TableEntity> entities = new List<TableEntity>();
+
+                switch (table)
+                {
+                    case Tables.Area:
+                        entities = _entityImporterExporter.Export<Area>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Artist:
+                        entities = _entityImporterExporter.Export<Artist>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Label:
+                        entities = _entityImporterExporter.Export<Label>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Place:
+                        entities = _entityImporterExporter.Export<Place>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Recording:
+                        entities = _entityImporterExporter.Export<Recording>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList(); ;
+                        break;
+
+                    case Tables.Release:
+                        entities = _entityImporterExporter.Export<Release>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.ReleaseGroup:
+                        entities = _entityImporterExporter.Export<ReleaseGroup>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Work:
+                        entities = _entityImporterExporter.Export<Work>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+
+                    case Tables.Url:
+                        entities = _entityImporterExporter.Export<Url>(recordsPerPage, pageNumber).Cast<TableEntity>().ToList();
+                        break;
+                }
+
+                //serialize them to json
+                serializedEntities = _serializationManager.Serialize(entities);
+
+                serializedOutput.Add(table, serializedEntities);
+            }
+            return (serializedOutput, _serializationManager.Format);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A Dictionary with Table enum as key and serialized entities as values</returns>
+        public Dictionary<Tables, string> SerializeTableEntities()
+        {
+            Dictionary<Tables, string> serializedOutput = new();
+
+            foreach (var table in _exportConfig.TablesToExport)
+            {
+                // get entities list
+                var entities = _entityImporterExporter.Export(table, _exportConfig.RecordsPerPage, _exportConfig.PageNumber);
+
+                //serialize them to json
+                string serializedEntities = _serializationManager.Serialize(entities);
+
+                serializedOutput.Add(table, serializedEntities);
+
+                //var directory = Directory.CreateDirectory("export").Name;
+                //var fileName = $"{table}.json";
+                //string fullPath = Path.Combine(directory, fileName);
+
+                //File.WriteAllText(fullPath, serializedEntities);
+            }
+            return serializedOutput;
+        }
     }
 }

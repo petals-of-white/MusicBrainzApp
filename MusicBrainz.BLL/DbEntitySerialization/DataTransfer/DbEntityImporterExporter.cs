@@ -10,7 +10,7 @@ namespace MusicBrainz.BLL.DbEntitySerialization.DataTransfer
         private DbAccess _db = new();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="table"></param>
         /// <param name="recordsPerPage"></param>
@@ -23,22 +23,19 @@ namespace MusicBrainz.BLL.DbEntitySerialization.DataTransfer
         public ICollection<T> Export<T>(int? recordsPerPage, int? pageNumber) where T : TableEntity =>
                         _db.GetTableRecordsGenericMapProperties<T>(recordsPerPage, pageNumber);
 
-        public void Import(Tables table, ICollection<object> entities)
-        {
-            _db.InsertEntities(table, entities);
-            throw new NotImplementedException();
-        }
-
         public IList<ITableInfo> GetTablesInfo()
         {
             return _db.GetDbTablesInfo();
         }
 
+        public void Import(Tables table, ICollection<object> entities)
+        {
+            _db.InsertEntities(table, entities);
+            throw new NotImplementedException();
+        }
         public void Import<T>(ICollection<T> entities) where T : TableEntity
         {
             _db.InsertEntities<T>(entities);
         }
-
-
     }
 }
