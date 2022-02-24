@@ -4,7 +4,6 @@ namespace MusicBrainz.Common.Entities
 {
     public class Artist : TableEntity
     {
-
         [Required]
         public string Name { get; set; }
 
@@ -35,6 +34,5 @@ namespace MusicBrainz.Common.Entities
         [Required]
         [MaxLength(255)]
         public string Comment { get; set; } = "";
-
     }
 }

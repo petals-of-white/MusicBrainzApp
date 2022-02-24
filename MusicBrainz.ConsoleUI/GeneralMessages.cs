@@ -80,5 +80,13 @@ namespace MusicBrainz.ConsoleUI
         {
             Console.WriteLine("The input data is wrong.");
         }
+
+        internal static void NoImportFilesFound()
+        {
+            Console.WriteLine(
+                "Unfortunately, no JSON import files were found " +
+                "(Area.json, Artist.json, Label.Json, Place.json, Recording.json, Release.json, ReleaseGroup.json, Url.json, Work.json). " +
+                "Please create them first, then try to use our app once again.");
+        }
     }
 }

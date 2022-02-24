@@ -9,8 +9,6 @@ namespace MusicBrainz.DAL
     /// </summary>
     internal static class DataReaderToEntityConverterPropertiesMapped
     {
-
-
         public delegate object? ForeignKeySubstitutioner(int id, Tables table);
 
         private static T? ConvertValue<T>(object raw)
@@ -28,7 +26,6 @@ namespace MusicBrainz.DAL
         {
             Type entityType = typeof(T);
 
-
             while (reader.Read())
             {
                 T? entity = Activator.CreateInstance<T>();
@@ -39,11 +36,11 @@ namespace MusicBrainz.DAL
                     // (classes inherited from TableEntity)
                     bool isForeignKey = typeof(TableEntity).IsAssignableFrom(property.PropertyType);
 
-                    object? rawValue = (reader [property.Name] is DBNull) ? null : reader[property.Name];
+                    object? rawValue = (reader [property.Name] is DBNull) ? null : reader [property.Name];
 
                     //object? foreignRecord = isForeignKey ? foreignKeySubstitutioner((int) rawValue, (Tables) Enum.Parse(typeof(Tables), property.Name));
 
-                    //                  
+                    //
                     object? realValue =
                         (rawValue is null)
                         ? null

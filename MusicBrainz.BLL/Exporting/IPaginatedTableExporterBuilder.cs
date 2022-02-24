@@ -3,6 +3,5 @@
     public interface IPaginatedTableExporterBuilder : ITableUsable, IPaginationCreator
     {
         IPaginatedTableExporter Build();
-
     }
 }

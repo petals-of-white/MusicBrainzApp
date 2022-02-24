@@ -1,5 +1,6 @@
 ﻿using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
+
 namespace MusicBrainz.BLL.DbEntitySerialization
 {
     public class DbExportImportConfig
@@ -25,6 +26,7 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         //Make sure this is inaccessible for edit from outer classe
         public Dictionary<Tables, ICollection<TableEntity>> EntitiesToImport { get; private set; } =
             new Dictionary<Tables, ICollection<TableEntity>>();
+
         public Dictionary<Tables, string> SerializedEntitiesToImport { get; private set; } =
             new Dictionary<Tables, string>();
 
@@ -52,6 +54,5 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         {
             SerializedEntitiesToImport.Add(table, jsonObject);
         }
-
     }
 }

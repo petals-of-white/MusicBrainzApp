@@ -32,6 +32,5 @@ namespace MusicBrainz.Common.Entities
 
         [Required]
         public bool Ended { get; set; } = false;
-
     }
 }

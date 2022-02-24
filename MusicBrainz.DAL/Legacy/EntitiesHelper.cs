@@ -17,7 +17,6 @@ namespace MusicBrainz.DAL.Legacy
                 //deleting gid
                 newTable.Columns.Remove("gid");
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
@@ -25,7 +24,6 @@ namespace MusicBrainz.DAL.Legacy
 
             foreach (var entity in dataTable.Rows)
             {
-
             }
 
             //TransformColumnTypes<T>(newTable);
@@ -73,7 +71,6 @@ namespace MusicBrainz.DAL.Legacy
             }
             affectedColumns = affected;
             return transformedTable;
-
         }
     }
 }

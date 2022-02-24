@@ -7,7 +7,6 @@ namespace MusicBrainz.Tests
 {
     public class JSONExportTest
     {
-
         private readonly ITestOutputHelper output;
 
         public JSONExportTest(ITestOutputHelper output)
@@ -25,7 +24,6 @@ namespace MusicBrainz.Tests
         [InlineData("ReleaseGroup")]
         [InlineData("Url")]
         [InlineData("Work")]
-        //[TestBeforeAfter]
         public void ExportOneTableToJson_ShouldNotBeEmpty(string tableName)
         {
             TableToJsonExporterBuilder builder = new();

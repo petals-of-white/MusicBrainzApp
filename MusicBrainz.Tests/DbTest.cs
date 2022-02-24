@@ -131,27 +131,35 @@ namespace MusicBrainz.Tests
                 case Tables.Area:
                     entities = db.GetTableRecordsGenericMapDefault<Area>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Artist:
                     entities = db.GetTableRecordsGenericMapDefault<Artist>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Label:
                     entities = db.GetTableRecordsGenericMapDefault<Label>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Place:
                     entities = db.GetTableRecordsGenericMapDefault<Place>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Recording:
                     entities = db.GetTableRecordsGenericMapDefault<Recording>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Release:
                     entities = db.GetTableRecordsGenericMapDefault<Release>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.ReleaseGroup:
                     entities = db.GetTableRecordsGenericMapDefault<ReleaseGroup>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Work:
                     entities = db.GetTableRecordsGenericMapDefault<Work>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Url:
                     entities = db.GetTableRecordsGenericMapDefault<Url>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
@@ -161,7 +169,6 @@ namespace MusicBrainz.Tests
             //Assert.DoesNotContain(null, oneTable);
 
             //output.WriteLine(oneTable?.ToString() ?? "null");
-
         }
 
         [Theory]
@@ -177,27 +184,35 @@ namespace MusicBrainz.Tests
                 case Tables.Area:
                     entities = db.GetTableRecordsGenericMapProperties<Area>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Artist:
                     entities = db.GetTableRecordsGenericMapProperties<Artist>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Label:
                     entities = db.GetTableRecordsGenericMapProperties<Label>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Place:
                     entities = db.GetTableRecordsGenericMapProperties<Place>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Recording:
                     entities = db.GetTableRecordsGenericMapProperties<Recording>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Release:
                     entities = db.GetTableRecordsGenericMapProperties<Release>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.ReleaseGroup:
                     entities = db.GetTableRecordsGenericMapProperties<ReleaseGroup>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Work:
                     entities = db.GetTableRecordsGenericMapProperties<Work>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
+
                 case Tables.Url:
                     entities = db.GetTableRecordsGenericMapProperties<Url>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
@@ -207,7 +222,6 @@ namespace MusicBrainz.Tests
             //Assert.DoesNotContain(null, oneTable);
 
             //output.WriteLine(oneTable?.ToString() ?? "null");
-
         }
 
         [Theory]
@@ -268,27 +282,35 @@ namespace MusicBrainz.Tests
                     case Tables.Area:
                         entities [i] = db.GetRecordById<Area>(i + 1);
                         break;
+
                     case Tables.Artist:
                         entities [i] = db.GetRecordById<Artist>(i + 1);
                         break;
+
                     case Tables.Label:
                         entities [i] = db.GetRecordById<Label>(i + 1);
                         break;
+
                     case Tables.Place:
                         entities [i] = db.GetRecordById<Place>(i + 1);
                         break;
+
                     case Tables.Recording:
                         entities [i] = db.GetRecordById<Recording>(i + 1);
                         break;
+
                     case Tables.Release:
                         entities [i] = db.GetRecordById<Release>(i + 1);
                         break;
+
                     case Tables.ReleaseGroup:
                         entities [i] = db.GetRecordById<ReleaseGroup>(i + 1);
                         break;
+
                     case Tables.Work:
                         entities [i] = db.GetRecordById<Work>(i + 1);
                         break;
+
                     case Tables.Url:
                         entities [i] = db.GetRecordById<Url>(i + 1);
                         break;

@@ -14,6 +14,7 @@ namespace MusicBrainz.DAL
         public delegate (T, IEnumerable<int?>) ReaderToEntityConverter<T>(IDataReader reader);
 
         public delegate IEnumerable<int?> ForeignKeyExporter(IDataReader reader);
+
         public static IEnumerable<(T entity, IEnumerable<int?> foreignKeys)> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection) where T : new()
         {
             //List<IEnumerable<int?>> output = new List<IEnumerable<int>>();
@@ -38,9 +39,6 @@ namespace MusicBrainz.DAL
             var res = reader.Select(AreaFromReader);
 
             var fkTable = res.Select(x => x.foreignKeys);
-
-
-
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace MusicBrainz.DAL
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        /// 
+        ///
         private static T? ConvertValue<T>(object raw)
             =>
             (raw != DBNull.Value) ? (T) raw : default(T);
@@ -84,7 +82,6 @@ namespace MusicBrainz.DAL
         {
             Artist artist = new();
             List<int?> fkList = new List<int?>();
-
 
             artist.Id = (int) reader ["Id"];
             artist.Name = (string) reader ["Name"];
@@ -123,7 +120,6 @@ namespace MusicBrainz.DAL
 
             List<int?> fkList = new List<int?>();
 
-
             label.Id = (int) reader ["Id"];
             label.Name = (string) reader ["Name"];
             label.SortName = (string) reader ["SortName"];
@@ -134,7 +130,6 @@ namespace MusicBrainz.DAL
             int? areaFk = ConvertValue<int?>(reader ["Area"]);
             // !!!!!!!!!!!!!!
             // !!!!!!!!!!!!!!
-
 
             label.BeginDateYear = ConvertValue<short?>(reader ["BeginDateYear"]);
             label.BeginDateMonth = ConvertValue<short?>(reader ["BeginDateMonth"]);
@@ -158,7 +153,6 @@ namespace MusicBrainz.DAL
             Place place = new();
 
             List<int?> fkList = new List<int?>();
-
 
             place.Id = (int) reader ["Id"];
             place.Name = (string) reader ["Name"];
@@ -211,7 +205,6 @@ namespace MusicBrainz.DAL
 
             List<int?> fkList = new List<int?>();
 
-
             release.Id = (int) reader ["Id"];
             release.Name = (string) reader ["Name"];
             release.Comment = (string) reader ["Comment"];
@@ -254,7 +247,6 @@ namespace MusicBrainz.DAL
 
             IEnumerable<int?> fkList = new List<int?>();
 
-
             url.Id = (int) reader ["Id"];
             url.UrlValue = (string) reader ["UrlValue"];
             url.EditsPending = (int) reader ["EditsPending"];
@@ -268,7 +260,6 @@ namespace MusicBrainz.DAL
             Work work = new();
 
             IEnumerable<int?> fkList = new List<int?>();
-
 
             work.Id = (int) reader ["Id"];
             work.Name = (string) reader ["Name"];

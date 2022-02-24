@@ -7,5 +7,4 @@ namespace MusicBrainz.BLL.Exporting
         IList<DbTableInfo> TablesInfo { get; }
         IList<DbTableInfo> SelectedTables { get; }
     }
-
 }

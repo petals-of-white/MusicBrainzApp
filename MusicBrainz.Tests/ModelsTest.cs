@@ -9,7 +9,6 @@ namespace MusicBrainz.Tests
 {
     public class ModelsTest
     {
-
         private readonly ITestOutputHelper output;
 
         public ModelsTest(ITestOutputHelper output)
@@ -29,7 +28,6 @@ namespace MusicBrainz.Tests
             foreach (ValidationResult result in results)
             {
                 output.WriteLine(result.ErrorMessage);
-
             }
             Assert.False(isValid);
         }
@@ -47,6 +45,5 @@ namespace MusicBrainz.Tests
             new object[]{ new Label {Comment="Goodo", SortName="Interesting"} },
             new object[]{ new Url  {LastUpdated=DateTime.Now,  } },
         };
-
     }
 }

@@ -33,6 +33,7 @@ namespace MusicBrainz.BLL.DbEntitySerialization.DataTransfer
             _db.InsertEntities(table, entities);
             throw new NotImplementedException();
         }
+
         public void Import<T>(ICollection<T> entities) where T : TableEntity
         {
             _db.InsertEntities<T>(entities);

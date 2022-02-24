@@ -10,10 +10,12 @@ namespace MusicBrainz.Tests
     public class ImportTest
     {
         private readonly ITestOutputHelper output;
+
         public ImportTest(ITestOutputHelper output)
         {
             this.output = output;
         }
+
         public static IEnumerable<object []> GetTablesEnum()
         {
             yield return new object [] { Tables.Area };
@@ -28,7 +30,6 @@ namespace MusicBrainz.Tests
         }
 
         [Fact]
-        //[MemberData(nameof(GetTablesEnum))]
         public void ImportEntities_ShouldWork()
         {
             DbExportImportConfig config = new();
@@ -43,7 +44,6 @@ namespace MusicBrainz.Tests
                 , new List<TableEntity>()
             {
                     new Artist {Name="MegaMeme", SortName="MegaMeme", Comment="Rarara"
-
                     } });
 
             //config.AddEntitiesToImport(Tables.Label, new List<TableEntity>());
@@ -59,7 +59,6 @@ namespace MusicBrainz.Tests
             //config.AddEntitiesToImport(Tables.Url, new List<TableEntity>());
 
             //config.AddEntitiesToImport(Tables.Work, new List<TableEntity>());
-
 
             DbEntitiesSerializer main = new(config);
 

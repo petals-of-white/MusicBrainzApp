@@ -15,6 +15,7 @@ namespace MusicBrainz.DAL
         public delegate T ReaderToEntityConverter<T>(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner);
 
         public delegate void ForeignKeyExporter<T>(IDataReader reader);
+
         public static IEnumerable<T> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection, ForeignKeyExporter<T> foreignKeyExporter, IEnumerable<int> outputCollection) where T : new()
         {
             while (reader.Read())
@@ -50,7 +51,7 @@ namespace MusicBrainz.DAL
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        /// 
+        ///
         private static T? ConvertValue<T>(object raw)
             =>
        (raw != DBNull.Value) ? (T) raw : default(T);
@@ -132,7 +133,6 @@ namespace MusicBrainz.DAL
             // !!!!!!!!!!!!!!
             label.Area = (areaFk is not null) ? (Area) foreignKeySubstitutioner(areaFk.Value, Tables.Area) : null;
             // !!!!!!!!!!!!!!
-
 
             label.BeginDateYear = ConvertValue<short?>(reader ["BeginDateYear"]);
             label.BeginDateMonth = ConvertValue<short?>(reader ["BeginDateMonth"]);

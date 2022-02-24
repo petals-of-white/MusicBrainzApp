@@ -9,6 +9,7 @@ using MusicBrainz.Tools;
 using MusicBrainz.Tools.Config;
 using MusicBrainz.Tools.Logging;
 using static MusicBrainz.DAL.DataReaderToEntityConverter;
+
 namespace MusicBrainz.DAL
 {
     public class DbAccess
@@ -18,13 +19,13 @@ namespace MusicBrainz.DAL
         private string _connectionString = ConfigHelper.GetConnectionString();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
-        /// 
+        ///
         private DataTable GetQueryResult(string sql)
         {
             DataTable output = new();
@@ -49,25 +50,21 @@ namespace MusicBrainz.DAL
 
                 return output;
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
         }
 
         /// <summary>
@@ -80,23 +77,23 @@ namespace MusicBrainz.DAL
             Type entityType = typeof(T);
             DynamicParameters entityParams;
 
-
             string storedProcedureName = $"spInsert{entityType.Name}";
 
             using (SqlConnection connection = new(_connectionString))
             {
                 foreach (T entity in entities)
                 {
-
                     entityParams = new DynamicParameters();
                     foreach (var property in entityType.GetProperties().Where(x => x.Name != "Id"))
                     {
-                        entityParams.Add(property.Name, property.GetValue(entity));
+                        object? valueToAdd = typeof(TableEntity).IsAssignableFrom(property.PropertyType)
+                            ? (property.GetValue(entity) as TableEntity)?.Id
+                            : property.GetValue(entity);
+
+                        entityParams.Add(property.Name, valueToAdd);
                     }
 
-
                     // executing stored procedure
-
 
                     int affectedRows = connection.Execute(sql: storedProcedureName, param: entityParams, commandType: CommandType.StoredProcedure);
                 }
@@ -128,7 +125,7 @@ namespace MusicBrainz.DAL
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
@@ -146,25 +143,20 @@ namespace MusicBrainz.DAL
 
             try
             {
-
                 object? rawData = queryResult.Rows [0].ItemArray [0];
 
                 rows = Convert.ToInt32(rawData);
             }
-
-
             catch (DeletedRowInaccessibleException ex)
             {
                 // log here
                 _logger.Log(ex.ToString());
             }
-
             catch (IndexOutOfRangeException ex)
             {
                 // log here
                 _logger.Log(ex.ToString());
             }
-
             catch (FormatException ex)
             {
                 _logger.Log(ex.ToString());
@@ -181,18 +173,18 @@ namespace MusicBrainz.DAL
         /// <exception cref="SqlException"></exception>
         public IList<ITableInfo> GetDbTablesInfo()
         {
-            string sql = @"select 
-                          t.name TableName, 
-                          i.rows Records 
-                        from 
-                          sysobjects t, 
-                          sysindexes i 
-                        where 
-                          t.xtype = 'U' 
-                          and i.id = t.id 
-                          and i.indid in (0, 1) 
-                          and t.name not like 'sys%' 
-                        order by 
+            string sql = @"select
+                          t.name TableName,
+                          i.rows Records
+                        from
+                          sysobjects t,
+                          sysindexes i
+                        where
+                          t.xtype = 'U'
+                          and i.id = t.id
+                          and i.indid in (0, 1)
+                          and t.name not like 'sys%'
+                        order by
                           TableName;";
 
             SqlDataReader? reader;
@@ -216,19 +208,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -239,7 +228,7 @@ namespace MusicBrainz.DAL
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ids"></param>
         /// <param name="tableOption"></param>
@@ -322,19 +311,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -343,7 +329,7 @@ namespace MusicBrainz.DAL
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
@@ -361,7 +347,7 @@ namespace MusicBrainz.DAL
 
             string sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {entityTypeName}
                             WHERE Id = {id};";
@@ -384,13 +370,10 @@ namespace MusicBrainz.DAL
 
                         {
                             output = reader.Select<T>(GetRecordById).FirstOrDefault();
-
                         }
-
                     }
                 }
             }
-
             catch (IndexOutOfRangeException ex)
             {
                 _logger.Log(ex.ToString());
@@ -475,19 +458,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -515,11 +495,10 @@ namespace MusicBrainz.DAL
             {
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {tableOption};";
             }
-
             else
             {
                 if (recordsPerPage < 1)
@@ -536,7 +515,7 @@ namespace MusicBrainz.DAL
 
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {tableOption}
                             ORDER BY Id
@@ -580,15 +559,13 @@ namespace MusicBrainz.DAL
                             outputCol.Add(foreignKeys);
                         };
 
-
                         var test2 = delegate (IDataReader reader)
                         {
                             return new List<int?>(new int? [] { (int?) reader ["Area"], (int?) reader [""] });
                         };
 
-                        
                          * !!!!!!!!!!!!experiment end
-                         * 
+                         *
                          */
 
                         switch (tableOption)
@@ -633,19 +610,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -666,16 +640,14 @@ namespace MusicBrainz.DAL
             string sql;
             SqlDataReader? reader;
 
-
             if (recordsPerPage is null || pageNumber is null)
             {
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {table.Name};";
             }
-
             else
             {
                 if (recordsPerPage < 1)
@@ -692,7 +664,7 @@ namespace MusicBrainz.DAL
 
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {table.Name}
                             ORDER BY Id
@@ -754,19 +726,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -785,16 +754,14 @@ namespace MusicBrainz.DAL
             string sql;
             SqlDataReader? reader;
 
-
             if (recordsPerPage is null || pageNumber is null)
             {
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {table.Name};";
             }
-
             else
             {
                 if (recordsPerPage < 1)
@@ -811,7 +778,7 @@ namespace MusicBrainz.DAL
 
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {table.Name}
                             ORDER BY Id
@@ -836,19 +803,16 @@ namespace MusicBrainz.DAL
                     }
                 }
             }
-
             catch (SqlException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
                 throw;
             }
-
             catch (Exception ex)
             {
                 _logger.Log(ex.ToString());
@@ -874,16 +838,14 @@ namespace MusicBrainz.DAL
 
             string entityTypeName = entityType.Name;
 
-
             if (recordsPerPage is null || pageNumber is null)
             {
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {entityTypeName};";
             }
-
             else
             {
                 if (recordsPerPage < 1)
@@ -900,12 +862,11 @@ namespace MusicBrainz.DAL
 
                 sql = @$"USE MusicBrainz;
                             SELECT
-                               * 
+                               *
                             FROM
                                {entityTypeName}
                             ORDER BY Id
                             OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
-
             }
 
             List<T> entitiesList = new(); // this will be returned
@@ -923,7 +884,6 @@ namespace MusicBrainz.DAL
                 //deleting gid
                 mappedOutput.Columns.Remove("gid");
             }
-
             catch (ArgumentException ex)
             {
                 _logger.Log(ex.ToString());
@@ -933,7 +893,6 @@ namespace MusicBrainz.DAL
             // changing column type to corresponding entity
 
             //NewMethod(entityType, mappedOutput);
-
 
             // filling mappedOutput, using Entities instead of foreign keys.
 
@@ -964,7 +923,6 @@ namespace MusicBrainz.DAL
                                 // GetRecordsById - get list instead of one record. !!!!!!!!!!!!!!!!
                                 foreignRecord = GetRecordById<Area>(foreignKey.Value);
                             }
-
                             else if (propertyType == typeof(ReleaseGroup))
                             {
                                 //foreignRecord = GetQueryResult(sql2).Rows [0].ToObject<ReleaseGroup>();
@@ -973,7 +931,6 @@ namespace MusicBrainz.DAL
                         }
                         mappedRow [propertyName] = foreignRecord;
                     }
-
                     else
                     {
                         mappedRow [propertyName] = originalRow [propertyName];
@@ -991,8 +948,5 @@ namespace MusicBrainz.DAL
 
             return entitiesList;
         }
-
-
-
     }
 }

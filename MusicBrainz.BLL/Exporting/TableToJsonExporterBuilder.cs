@@ -14,11 +14,7 @@ namespace MusicBrainz.BLL.Exporting
         ///// <param name="jsonPath"></param>
         //public void JsonPath(string jsonPath)
         //{
-
         //}
-
-
-
 
         /// <summary>
         /// Builds the json exporter
@@ -28,6 +24,7 @@ namespace MusicBrainz.BLL.Exporting
         {
             return _jsonExporter;
         }
+
         /// <summary>
         /// Disables pagination
         /// </summary>
@@ -66,7 +63,7 @@ namespace MusicBrainz.BLL.Exporting
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
         public void UseAllTables()
@@ -114,8 +111,6 @@ namespace MusicBrainz.BLL.Exporting
         public IList<DbTableInfo> GetTableInfo()
         {
             return _jsonExporter.TablesInfo;
-
         }
-
     }
 }

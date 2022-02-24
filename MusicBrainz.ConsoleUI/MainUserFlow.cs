@@ -82,8 +82,8 @@ namespace MusicBrainz.ConsoleUI
                     Console.WriteLine("Exporting...");
 
                     (Dictionary<Tables, string> serializedTables, _) = _mainSerializer.SerializeTabelEntitiesTypeMapped();
-                    
-                    foreach(KeyValuePair<Tables, string> serializedTable in serializedTables)
+
+                    foreach (KeyValuePair<Tables, string> serializedTable in serializedTables)
                     {
                         _fileManager.WriteToFile(serializedTable.Key, serializedTable.Value);
                     }
@@ -96,8 +96,14 @@ namespace MusicBrainz.ConsoleUI
                     break;
             }
 
+            ExitApplication();
+        }
+
+        private void ExitApplication()
+        {
             GeneralMessages.SayGoodbye();
             Console.ReadKey();
+            Environment.Exit(0);
         }
 
         public void Start()
@@ -207,7 +213,7 @@ namespace MusicBrainz.ConsoleUI
                             {
                                 foreach (var tableNumber in tablesNumbers)
                                 {
-                                    choicesResult.Add(choices [tableNumber-1]);
+                                    choicesResult.Add(choices [tableNumber - 1]);
                                 }
                             }
                             else
@@ -288,6 +294,14 @@ namespace MusicBrainz.ConsoleUI
         private void ShowAvailableImportFiles()
         {
             GeneralMessages.FilesFound();
+            IList<FileInfo> importFiles = _fileManager.GetImportFiles();
+
+            if (importFiles.Count == 0)
+            {
+                GeneralMessages.NoImportFilesFound();
+                ExitApplication();
+            }
+
             DataPresenter.ShowFilesInfo(_fileManager.GetImportFiles());
         }
     }

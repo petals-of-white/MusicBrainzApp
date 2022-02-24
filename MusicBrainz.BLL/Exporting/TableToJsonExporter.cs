@@ -17,7 +17,7 @@ namespace MusicBrainz.BLL.Exporting
         private DbAccess _db = new();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="UserFriendlyException"></exception>
         public TableToJsonExporter()
@@ -26,7 +26,6 @@ namespace MusicBrainz.BLL.Exporting
             {
                 //TablesInfo = _db.GetTablesInfo();
             }
-
             catch (Exception ex)
             {
                 throw new UserFriendlyException("An error has occured while trying to get data from the database. Please try again. Later", ex);
@@ -45,7 +44,7 @@ namespace MusicBrainz.BLL.Exporting
         public IList<DbTableInfo> TablesInfo { get; internal set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
@@ -62,7 +61,6 @@ namespace MusicBrainz.BLL.Exporting
             {
                 //tableOption = Enum.Parse(typeof(Tables), table.Name);
             }
-
             catch (ArgumentException ex)
             {
                 throw new UserFriendlyException($"The database doesn't have a table named {table.Name}", ex);
@@ -110,7 +108,6 @@ namespace MusicBrainz.BLL.Exporting
                         break;
                 };
             }
-
             catch (ArgumentOutOfRangeException ex)
             {
                 _logger.Log(ex.ToString());
@@ -121,7 +118,7 @@ namespace MusicBrainz.BLL.Exporting
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="UserFriendlyException"></exception>
         ///// <exception cref="IOException"></exception>
@@ -139,9 +136,7 @@ namespace MusicBrainz.BLL.Exporting
                 try
                 {
                     rawRecords = getEntitiesListFromDb(table);
-
                 }
-
                 catch (UserFriendlyException ex)
                 {
                     _logger.Log(ex.ToString());
@@ -169,7 +164,6 @@ namespace MusicBrainz.BLL.Exporting
                     File.WriteAllText(tableJsonPath, string.Empty);
                     File.AppendAllText(tableJsonPath, json);
                 }
-
                 catch (Exception ex)
                 {
                     throw new UserFriendlyException("An error has occured while trying to write data to a json file. Please try again later.", ex);
@@ -190,7 +184,5 @@ namespace MusicBrainz.BLL.Exporting
         {
             throw new NotImplementedException();
         }
-
     }
-
 }

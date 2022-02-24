@@ -17,7 +17,5 @@ namespace MusicBrainz.Common.Entities
         public int EditsPending { get; set; }
 
         public DateTime? LastUpdated { get; set; }
-
-
     }
 }
