@@ -1,5 +1,6 @@
 ﻿using MusicBrainz.BLL.DbEntitySerialization.DataTransfer;
 using MusicBrainz.BLL.DbEntitySerialization.Serialization;
+using MusicBrainz.BLL.Exceptions;
 using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
 using MusicBrainz.Common.TableModels;
@@ -48,6 +49,11 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             _importConfig = importConfig;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException">User friendly exception</exception>
         public IList<ITableInfo> GetTablesInfo()
         {
             return _entityImporterExporter.GetTablesInfo();

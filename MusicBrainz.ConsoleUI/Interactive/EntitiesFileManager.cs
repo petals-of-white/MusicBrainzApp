@@ -1,7 +1,8 @@
-﻿using MusicBrainz.Common.Enums;
+﻿using MusicBrainz.BLL.Exceptions;
+using MusicBrainz.Common.Enums;
 using MusicBrainz.Tools.Config;
 
-namespace MusicBrainz.ConsoleUI
+namespace MusicBrainz.ConsoleUI.Interactive
 {
     /// <summary>
     /// This class manages file read/write
@@ -25,6 +26,11 @@ namespace MusicBrainz.ConsoleUI
         public string Format { get; private set; }
         public DirectoryInfo ImportFolder { get => _importFolder; }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException">UF exception</exception>
         public IList<FileInfo> GetExportFiles()
         {
             var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}{Format}");
@@ -35,6 +41,12 @@ namespace MusicBrainz.ConsoleUI
 
             return exportFiles;
         }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException">UF exception</exception>
 
         public IList<FileInfo> GetImportFiles()
         {

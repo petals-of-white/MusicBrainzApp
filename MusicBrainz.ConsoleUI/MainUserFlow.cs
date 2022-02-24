@@ -1,7 +1,9 @@
 ﻿using MusicBrainz.BLL.DbEntitySerialization;
 using MusicBrainz.BLL.DbEntitySerialization.Serialization;
+using MusicBrainz.BLL.Exceptions;
 using MusicBrainz.Common.Enums;
 using MusicBrainz.Common.TableModels;
+using MusicBrainz.ConsoleUI.Interactive;
 using MusicBrainz.Tools.Logging;
 
 namespace MusicBrainz.ConsoleUI
@@ -99,6 +101,20 @@ namespace MusicBrainz.ConsoleUI
             ExitApplication();
         }
 
+        public void Start()
+        {
+            GeneralMessages.GreetUser();
+            try
+            {
+                DataPresenter.ShowTablesInfo(_mainSerializer.GetTablesInfo());
+            }
+            catch (UserFriendlyException ex)
+            {
+                GeneralMessages.PrintException(ex);
+                ExitApplication();
+            }
+        }
+
         private void ExitApplication()
         {
             GeneralMessages.SayGoodbye();
@@ -106,14 +122,9 @@ namespace MusicBrainz.ConsoleUI
             Environment.Exit(0);
         }
 
-        public void Start()
-        {
-            GeneralMessages.GreetUser();
-
-            DataPresenter.ShowTablesInfo(_mainSerializer.GetTablesInfo());
-        }
-
         #endregion Main methods
+
+        #region Inner methods
 
         private void ConfigurePaging()
         {
@@ -262,47 +273,68 @@ namespace MusicBrainz.ConsoleUI
         private void SelectTablesToExport()
         {
             GeneralMessages.ExplainTableSelection();
+            HashSet<ITableInfo> selectedTablesToExport;
+            try
+            {
+                selectedTablesToExport = SelectMultipleTables(_mainSerializer.GetTablesInfo());
 
-            HashSet<ITableInfo> selectedTablesToExport = SelectMultipleTables(_mainSerializer.GetTablesInfo());
-
-            _exportConfig.AddTableToExport(selectedTablesToExport.Select(t => t.Name).ToArray());
-
-            //foreach (ITableInfo exportTable in selectedTablesToExport)
-            //{
-            //    _exportConfig.AddTableToExport()
-            //}
-
-            // adding tables to export
+                // adding tables to export
+                _exportConfig.AddTableToExport(selectedTablesToExport.Select(t => t.Name).ToArray());
+            }
+            catch (UserFriendlyException ex)
+            {
+                GeneralMessages.PrintException(ex);
+                ExitApplication();
+            }
         }
 
         private void SelectTablesToImport()
         {
             GeneralMessages.ExplainTableSelection();
 
-            HashSet<FileInfo> selectedImportFiles = SelectMultipleTables(_fileManager.GetImportFiles());
-
-            foreach (FileInfo importFile in selectedImportFiles)
+            HashSet<FileInfo> selectedImportFiles;
+            try
             {
-                Tables tableName = (Tables) Enum.Parse(typeof(Tables), Path.GetFileNameWithoutExtension(importFile.FullName));
+                selectedImportFiles = SelectMultipleTables(_fileManager.GetImportFiles());
+                foreach (FileInfo importFile in selectedImportFiles)
+                {
+                    Tables tableName = (Tables) Enum.Parse(typeof(Tables), Path.GetFileNameWithoutExtension(importFile.FullName));
 
-                string jsonContent = _fileManager.ReadFromFile(importFile);
+                    string jsonContent = _fileManager.ReadFromFile(importFile);
 
-                _importConfig.AddEntitiesToImport(tableName, jsonContent);
+                    _importConfig.AddEntitiesToImport(tableName, jsonContent);
+                }
+            }
+            catch (UserFriendlyException ex)
+            {
+                GeneralMessages.PrintException(ex);
+                ExitApplication();
             }
         }
 
         private void ShowAvailableImportFiles()
         {
             GeneralMessages.FilesFound();
-            IList<FileInfo> importFiles = _fileManager.GetImportFiles();
-
-            if (importFiles.Count == 0)
+            IList<FileInfo> importFiles;
+            try
             {
-                GeneralMessages.NoImportFilesFound();
+                importFiles = _fileManager.GetImportFiles();
+
+                if (importFiles.Count == 0)
+                {
+                    GeneralMessages.NoImportFilesFound();
+                    ExitApplication();
+                }
+
+                DataPresenter.ShowFilesInfo(importFiles);
+            }
+            catch (UserFriendlyException ex)
+            {
+                GeneralMessages.PrintException(ex);
                 ExitApplication();
             }
-
-            DataPresenter.ShowFilesInfo(_fileManager.GetImportFiles());
         }
+
+        #endregion Inner methods
     }
 }

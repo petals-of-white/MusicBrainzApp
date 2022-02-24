@@ -1,6 +1,6 @@
 ﻿using MusicBrainz.BLL.Exceptions;
 
-namespace MusicBrainz.ConsoleUI
+namespace MusicBrainz.ConsoleUI.Interactive
 {
     internal static class GeneralMessages
     {
@@ -26,7 +26,7 @@ namespace MusicBrainz.ConsoleUI
 
         internal static void AskForRecordsPerPage()
         {
-            Console.Write("How many records must a page contain? ");
+            Console.Write("How many records should a page contain? ");
         }
 
         internal static void ExplainTableSelection()
@@ -35,14 +35,22 @@ namespace MusicBrainz.ConsoleUI
                 "You can also select multiple tables by entering their numbers separated by space (e.g. '1 5 6 8'). To select all the tables, enter '*'");
         }
 
-        internal static void GreetUser()
-        {
-            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON files. Here are the tables:");
-        }
-
         internal static void FilesFound()
         {
             Console.WriteLine($"Here are the JSON files we've found in your local Import folder:");
+        }
+
+        internal static void GreetUser()
+        {
+            Console.WriteLine("Greetings! This app will allow you export MusicBrainz DB tables into JSON files and vice versa. Here are the tables:");
+        }
+
+        internal static void NoImportFilesFound()
+        {
+            Console.WriteLine(
+                "Unfortunately, no JSON import files were found " +
+                "(Area.json, Artist.json, Label.Json, Place.json, Recording.json, Release.json, ReleaseGroup.json, Url.json, Work.json). " +
+                "Please create them first, then try to use our app once again.");
         }
 
         internal static void PagingDisabled()
@@ -52,7 +60,7 @@ namespace MusicBrainz.ConsoleUI
 
         internal static void PagingEnabled(int recordsPerPage, int pageNumber)
         {
-            Console.WriteLine($"The pagination will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
+            Console.WriteLine($"Paging will be enabled. Records per page: {recordsPerPage}. Page number is {pageNumber}.");
         }
 
         internal static void PrintException(UserFriendlyException exception)
@@ -68,7 +76,7 @@ namespace MusicBrainz.ConsoleUI
 
         internal static void ValuesNotInRange()
         {
-            Console.WriteLine("Entered values were not in the defined range. Please enter valid value(s) and try again.");
+            Console.WriteLine("The entered values were not in the defined range. Please enter valid value(s) and try again.");
         }
 
         internal static void WrongFormat()
@@ -79,14 +87,6 @@ namespace MusicBrainz.ConsoleUI
         internal static void WrongInputData()
         {
             Console.WriteLine("The input data is wrong.");
-        }
-
-        internal static void NoImportFilesFound()
-        {
-            Console.WriteLine(
-                "Unfortunately, no JSON import files were found " +
-                "(Area.json, Artist.json, Label.Json, Place.json, Recording.json, Release.json, ReleaseGroup.json, Url.json, Work.json). " +
-                "Please create them first, then try to use our app once again.");
         }
     }
 }

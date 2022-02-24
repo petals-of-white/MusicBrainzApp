@@ -1,6 +1,6 @@
 ﻿using MusicBrainz.Common.TableModels;
 
-namespace MusicBrainz.ConsoleUI
+namespace MusicBrainz.ConsoleUI.Interactive
 {
     internal static class DataPresenter
     {
@@ -20,7 +20,7 @@ namespace MusicBrainz.ConsoleUI
             for (int i = 0; i < files.Count; i++)
             {
                 string length = string.Empty;
-                if (files [i].Length >= (1 << 10))
+                if (files [i].Length >= 1 << 10)
                     length = string.Format("{0}Kb", files [i].Length >> 10);
                 else
                     length = $"{files [i].Length}b";
@@ -40,11 +40,6 @@ namespace MusicBrainz.ConsoleUI
             Console.WriteLine("#".PadRight(_defaultPadding) + "Table name".PadRight(_defaultPadding) + "Number of records".PadRight(_defaultPadding));
 
             Console.WriteLine("".PadRight(_defaultPadding * 3, '='));
-
-            //for (int i = 0; i < _tables.Count; i++)
-            //{
-            //    Console.WriteLine($"{i + 1,-defaultPadding}{_tables [i].Name,-defaultPadding}{_tables [i].NumberOfRecords,-defaultPadding}");
-            //}
 
             foreach (ITableInfo tableInfo in tablesInfo)
             {

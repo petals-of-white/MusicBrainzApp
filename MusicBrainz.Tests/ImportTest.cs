@@ -46,20 +46,6 @@ namespace MusicBrainz.Tests
                     new Artist {Name="MegaMeme", SortName="MegaMeme", Comment="Rarara"
                     } });
 
-            //config.AddEntitiesToImport(Tables.Label, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.Place, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.Recording, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.Release, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.ReleaseGroup, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.Url, new List<TableEntity>());
-
-            //config.AddEntitiesToImport(Tables.Work, new List<TableEntity>());
-
             DbEntitiesSerializer main = new(config);
 
             main.ImportSerializedTableEntities();
