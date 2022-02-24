@@ -8,7 +8,7 @@ using MusicBrainz.Tools.Logging;
 
 namespace MusicBrainz.ConsoleUI
 {
-    internal static class MainFlow
+    internal static class OldFlow
     {
         [Flags]
         internal enum Mode
@@ -448,7 +448,7 @@ namespace MusicBrainz.ConsoleUI
         private static void ShowAvailableImportFiles()
         {
             const short defaultPadding = 16;
-            EntitiesFileManager fileManager = new(_serializationManager);
+            EntitiesFileManager fileManager = new();
 
             Console.WriteLine($"Here are the JSON files we've found in your local '{fileManager.ImportFolder}' folder:");
 

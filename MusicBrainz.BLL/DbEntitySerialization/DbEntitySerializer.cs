@@ -98,6 +98,9 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             }
         }
 
+        /// <summary>
+        /// Imports serialized table entities straight to the db
+        /// </summary>
         public void ImportSerializedTableEntitiesNew()
         {
             foreach (var importableTableEntities in _importConfig.SerializedEntitiesToImport)
@@ -161,6 +164,11 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             }
         }
 
+        /// <summary>
+        /// Exports and serializes table entities to string
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref=""
         public (Dictionary<Tables, string> serializedEntities, string format) SerializeTabelEntitiesTypeMapped()
         {
             Dictionary<Tables, string> serializedOutput = new();

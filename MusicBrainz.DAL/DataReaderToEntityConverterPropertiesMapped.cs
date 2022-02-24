@@ -28,17 +28,18 @@ namespace MusicBrainz.DAL
         {
             Type entityType = typeof(T);
 
-            T? entity = Activator.CreateInstance<T>();
 
             while (reader.Read())
             {
+                T? entity = Activator.CreateInstance<T>();
+
                 foreach (var property in entityType.GetProperties())
                 {
                     // check if the property type is one of custom table entity types
                     // (classes inherited from TableEntity)
                     bool isForeignKey = typeof(TableEntity).IsAssignableFrom(property.PropertyType);
 
-                    object? rawValue = ConvertValue<object>(reader [property.Name]);
+                    object? rawValue = (reader [property.Name] is DBNull) ? null : reader[property.Name];
 
                     //object? foreignRecord = isForeignKey ? foreignKeySubstitutioner((int) rawValue, (Tables) Enum.Parse(typeof(Tables), property.Name));
 

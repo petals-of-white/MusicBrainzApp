@@ -1,5 +1,4 @@
-﻿using MusicBrainz.BLL.DbEntitySerialization.Serialization;
-using MusicBrainz.Common.Enums;
+﻿using MusicBrainz.Common.Enums;
 using MusicBrainz.Tools.Config;
 
 namespace MusicBrainz.ConsoleUI
@@ -17,9 +16,9 @@ namespace MusicBrainz.ConsoleUI
         /// EntitiesFileManager and Db Entity Serializer
         /// </summary>
         /// <param name="serializationManager"></param>
-        public EntitiesFileManager(ISerializationManager serializationManager)
+        public EntitiesFileManager(string format = ".json")
         {
-            Format = serializationManager.Format;
+            Format = format;
         }
 
         public DirectoryInfo ExportFolder { get => _exportFolder; }
@@ -31,8 +30,8 @@ namespace MusicBrainz.ConsoleUI
             var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}{Format}");
 
             var exportFiles = (from file in _exportFolder.GetFiles()
-                              where entityTableFiles.Contains(file.Name)
-                              select file).ToList();
+                               where entityTableFiles.Contains(file.Name)
+                               select file).ToList();
 
             return exportFiles;
         }
@@ -42,10 +41,18 @@ namespace MusicBrainz.ConsoleUI
             var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}{Format}");
 
             var importFiles = (from file in _importFolder.GetFiles()
-                              where entityTableFiles.Contains(file.Name)
-                              select file).ToList();
+                               where entityTableFiles.Contains(file.Name)
+                               select file).ToList();
 
             return importFiles;
+        }
+
+        public string ReadFromFile(FileInfo file) => File.ReadAllText(file.FullName);
+
+        internal void WriteToFile(Tables tableName, string serializedContent)
+        {
+            string pathToExportFile = Path.Combine(ExportFolder.FullName, $"{tableName}{Format}");
+            File.WriteAllText(pathToExportFile, serializedContent);
         }
     }
 }

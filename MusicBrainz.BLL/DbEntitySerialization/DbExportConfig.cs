@@ -30,6 +30,10 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         {
             TablesToExport.UnionWith(tables);
         }
+        public void AddTableToExport(Tables tables)
+        {
+            TablesToExport.Add(tables);
+        }
 
         public void EnablePaging(int recordsPerPage, int pageNumber)
         {

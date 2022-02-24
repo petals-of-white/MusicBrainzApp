@@ -435,39 +435,39 @@ namespace MusicBrainz.DAL
                         switch (tableOption)
                         {
                             case Tables.Area:
-                                output = reader.Select(AreaFromReader).FirstOrDefault();
+                                output = reader.Select<Area>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Artist:
-                                output = reader.Select(ArtistFromReader, GetRecordById).FirstOrDefault();
+                                output = reader.Select<Artist>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Label:
-                                output = reader.Select(LabelFromReader, GetRecordById).FirstOrDefault();
+                                output = reader.Select<Label>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Place:
-                                output = reader.Select(PlaceFromReader, GetRecordById).FirstOrDefault();
+                                output = reader.Select<Place>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Recording:
-                                output = reader.Select(RecordingFromReader).FirstOrDefault();
+                                output = reader.Select<Recording>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Release:
-                                output = reader.Select(ReleaseFromReader, GetRecordById).FirstOrDefault();
+                                output = reader.Select<Release>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.ReleaseGroup:
-                                output = reader.Select(ReleaseGroupFromReader).FirstOrDefault();
+                                output = reader.Select<ReleaseGroup>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Url:
-                                output = reader.Select(UrlFromReader).FirstOrDefault();
+                                output = reader.Select<Url>(GetRecordById).FirstOrDefault();
                                 break;
 
                             case Tables.Work:
-                                output = reader.Select(WorkFromReader).FirstOrDefault();
+                                output = reader.Select<Work>(GetRecordById).FirstOrDefault();
                                 break;
                         }
 

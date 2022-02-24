@@ -1,13 +1,19 @@
 ﻿using MusicBrainz.ConsoleUI;
 
-MainFlow.GreetUser();
+//MainFlow.GreetUser();
 
-MainFlow.ShowAllTablesAndNumberOfRecords();
+//MainFlow.ShowAllTablesAndNumberOfRecords();
 
-MainFlow.SelectAction();
+//MainFlow.SelectAction();
 
-MainFlow.ConfirmResult();
+//MainFlow.ConfirmResult();
 
-MainFlow.SayGoodbye();
+//MainFlow.SayGoodbye();
 
-Console.ReadKey();
+//Console.ReadKey();
+
+MainUserFlow mainFlow = new();
+
+mainFlow.Start();
+mainFlow.ConfigureAction();
+mainFlow.Finish();
