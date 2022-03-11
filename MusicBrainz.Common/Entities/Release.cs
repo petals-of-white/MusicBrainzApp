@@ -2,11 +2,8 @@
 
 namespace MusicBrainz.Common.Entities
 {
-    public class Release
+    public class Release : TableEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public string Name { get; set; }
 
@@ -21,12 +18,6 @@ namespace MusicBrainz.Common.Entities
         public string Comment { get; set; } = "";
 
         [Required]
-        [Range(0, int.MaxValue)]
-        public int EditsPending { get; set; }
-
-        [Required]
         public short Quality { get; set; } = -1;
-
-        public DateTime? LastUpdated { get; set; }
     }
 }

@@ -1,2 +1,74 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram /> 
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MusicBrainz.Tools.Logging.ConsoleLogger" Collapsed="true">
+    <Position X="6.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\ConsoleLogger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.ConsoleLoggerFactory" Collapsed="true">
+    <Position X="6.5" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\ConsoleLoggerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.DBLogger" Collapsed="true">
+    <Position X="11" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\DBLogger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.DBLoggerFactory" Collapsed="true">
+    <Position X="11.75" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\DBLoggerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.FileLogger" Collapsed="true">
+    <Position X="8.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\FileLogger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.FileLoggerFactory" Collapsed="true">
+    <Position X="9.25" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\FileLoggerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.LoggerBase" Collapsed="true">
+    <Position X="8.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\LoggerBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Logging.LoggerFactory" Collapsed="true">
+    <Position X="9.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\LoggerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MusicBrainz.Tools.Config.ConfigHelper" Collapsed="true">
+    <Position X="14.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgAAAAEAAAAAAIAAAAAAAgAAgAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Config\ConfigHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="MusicBrainz.Tools.Logging.LogTarget" Collapsed="true">
+    <Position X="14.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Logging\LogTarget.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

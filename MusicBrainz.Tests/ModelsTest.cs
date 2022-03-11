@@ -9,29 +9,11 @@ namespace MusicBrainz.Tests
 {
     public class ModelsTest
     {
-
         private readonly ITestOutputHelper output;
 
         public ModelsTest(ITestOutputHelper output)
         {
             this.output = output;
-        }
-
-        [Theory]
-        [MemberData(nameof(GetModelWithWrongData))]
-        public void EmptyModelValidation_ShouldFail(object model)
-        {
-            var context = new ValidationContext(model, serviceProvider: null, items: null);
-            var results = new List<ValidationResult>();
-
-            var isValid = Validator.TryValidateObject(model, context, results);
-
-            foreach (ValidationResult result in results)
-            {
-                output.WriteLine(result.ErrorMessage);
-
-            }
-            Assert.False(isValid);
         }
 
         public static IEnumerable<object []> GetModelWithWrongData =>
@@ -48,5 +30,20 @@ namespace MusicBrainz.Tests
             new object[]{ new Url  {LastUpdated=DateTime.Now,  } },
         };
 
+        [Theory]
+        [MemberData(nameof(GetModelWithWrongData))]
+        public void EmptyModelValidation_ShouldFail(object model)
+        {
+            var context = new ValidationContext(model, serviceProvider: null, items: null);
+            var results = new List<ValidationResult>();
+
+            var isValid = Validator.TryValidateObject(model, context, results);
+
+            foreach (ValidationResult result in results)
+            {
+                output.WriteLine(result.ErrorMessage);
+            }
+            Assert.False(isValid);
+        }
     }
 }

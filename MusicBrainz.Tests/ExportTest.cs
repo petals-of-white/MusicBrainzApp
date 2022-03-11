@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using MusicBrainz.BLL.DbEntitySerialization;
 using MusicBrainz.Common.Enums;
@@ -11,7 +10,15 @@ namespace MusicBrainz.Tests
 {
     public class ExportTest
     {
+        private static int _pageNumberCheck = random.Next(1, 10);
+        private static int _recordsPerPageCheck = random.Next(1, 5000);
+        private static Random random = new();
         private readonly ITestOutputHelper output;
+
+        public ExportTest(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
 
         public static IEnumerable<object []> GetTablesEnum()
         {
@@ -26,36 +33,48 @@ namespace MusicBrainz.Tests
             yield return new object [] { Tables.Url };
         }
 
-        public ExportTest(ITestOutputHelper output)
+        [Theory]
+        [MemberData(nameof(GetTablesEnum))]
+        public void DbEntitiesSerializer_SerializationWork_OneTable_GenericMapping(Tables table)
         {
-            this.output = output;
+            // configuring...
+            DbExportImportConfig config = new();
+            config.AddTableToExport(new Tables [] { table });
+            config.EnablePaging(_recordsPerPageCheck, _pageNumberCheck);
+
+            //serializing ...
+            DbEntitiesSerializer dbSerializer = new(config);
+
+            dbSerializer.SerializeTabelEntitiesTypeMapped();
+
+            // Reading json from file
+            string json = File.ReadAllText($"export/{table}.json");
+
+            bool fileEmpty = string.IsNullOrWhiteSpace(json) || json.Length < 5;
+
+            Assert.False(fileEmpty);
         }
 
         [Theory]
         [MemberData(nameof(GetTablesEnum))]
-        public void DbEntitiesSerializer_OneTable_SerializationWork(Tables table)
+        public void DbEntitiesSerializer_SerializationWork_OneTableEnum(Tables table)
         {
-            Stopwatch stopwatch = new();
-            Random rand = new();
-            var recordsPerPage = rand.Next(1, 1000);
-            var pageNumber = rand.Next(1, 30);
+            //Random rand = new();
+            //var recordsPerPage = rand.Next(1, 1000);
+            //var pageNumber = rand.Next(1, 30);
 
             DbExportImportConfig config = new();
             config.AddTableToExport(new Tables [] { table });
-            config.EnablePaging(recordsPerPage, pageNumber);
-
-            stopwatch.Start();
+            config.EnablePaging(_recordsPerPageCheck, _pageNumberCheck);
 
             DbEntitiesSerializer dbSerializer = new(config);
-
-            stopwatch.Stop();
-            output.WriteLine(stopwatch.Elapsed.ToString());
 
             dbSerializer.SerializeTableEntities();
 
             string json = File.ReadAllText($"export/{table}.json");
 
             bool fileEmpty = string.IsNullOrWhiteSpace(json) || json.Length < 5;
+
             Assert.False(fileEmpty);
         }
     }

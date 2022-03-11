@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using Microsoft.Data.SqlClient;
 using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
 using MusicBrainz.Common.TableModels;
@@ -9,38 +8,42 @@ namespace MusicBrainz.DAL
     /// <summary>
     /// Contains logic that helps with converting SqlReader to corresponding entity type.
     /// </summary>
-    internal static class DataReaderToEntityConverterWithForeignKeysExport
+    internal static class DataReaderToEntityConverterOld
     {
-        public delegate (T, IEnumerable<int?>) ReaderToEntityConverter<T>(IDataReader reader);
+        public delegate object? ForeignKeySubstitutioner(int id, Tables sourceTable);
 
-        public delegate IEnumerable<int?> ForeignKeyExporter(IDataReader reader);
-        public static IEnumerable<(T entity, IEnumerable<int?> foreignKeys)> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection) where T : new()
+        public delegate T ReaderToEntityConverter<T>(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner);
+
+        public delegate void ForeignKeyExporter<T>(IDataReader reader);
+
+        public static IEnumerable<T> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection, ForeignKeyExporter<T> foreignKeyExporter, IEnumerable<int> outputCollection) where T : new()
         {
-            //List<IEnumerable<int?>> output = new List<IEnumerable<int>>();
-
             while (reader.Read())
             {
-                var (entity, list) = projection(reader);
-                yield return (entity, list);
+                var result = projection(reader, null);
+
+                foreignKeyExporter(reader);
+
+                yield return result;
             }
         }
 
-        private static void test()
+        /// <summary>
+        /// This extension method allows IDataReader to be queried like any other IEnumerable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="projection"></param>
+        /// <param name="foreignKeySubstitutioner"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
-            using var con = new SqlConnection();
-            con.Open();
-            SqlCommand cmd = con.CreateCommand();
-            cmd.CommandText = "askldfjasdlk;fj";
-            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var result = projection(reader, foreignKeySubstitutioner);
 
-            IEnumerable<int?> foreignKeys;
-
-            var res = reader.Select(AreaFromReader);
-
-            var fkTable = res.Select(x => x.foreignKeys);
-
-
-
+                yield return result;
+            }
         }
 
         /// <summary>
@@ -48,15 +51,13 @@ namespace MusicBrainz.DAL
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        /// 
+        ///
         private static T? ConvertValue<T>(object raw)
             =>
-            (raw != DBNull.Value) ? (T) raw : default(T);
+       (raw != DBNull.Value) ? (T) raw : default(T);
 
-        public static (Area, IEnumerable<int?>) AreaFromReader(IDataReader reader)
+        public static Area AreaFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
-            IEnumerable<int?> fkList = new List<int?>();
-
             Area area = new();
 
             area.Id = (int) reader ["Id"];
@@ -77,14 +78,12 @@ namespace MusicBrainz.DAL
             area.EditsPending = (int) reader ["EditsPending"];
             area.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            return (area, fkList);
+            return area;
         }
 
-        public static (Artist, IEnumerable<int?>) ArtistFromReader(IDataReader reader)
+        public static Artist ArtistFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Artist artist = new();
-            List<int?> fkList = new List<int?>();
-
 
             artist.Id = (int) reader ["Id"];
             artist.Name = (string) reader ["Name"];
@@ -106,23 +105,22 @@ namespace MusicBrainz.DAL
             int? beginAreaFk = ConvertValue<int?>(reader ["BeginArea"]);
             int? endAreaFk = ConvertValue<int?>(reader ["EndArea"]);
 
+            artist.Area = (areaFk is not null) ? (Area) foreignKeySubstitutioner(areaFk.Value, Tables.Area) : null;
+
+            artist.BeginArea = (beginAreaFk is not null) ? (Area) foreignKeySubstitutioner(beginAreaFk.Value, Tables.Area) : null;
+            artist.EndArea = (endAreaFk is not null) ? (Area) foreignKeySubstitutioner(endAreaFk.Value, Tables.Area) : null;
             //!!!!!!!!!!!!!!!!!!!!
 
             artist.Ended = (bool) reader ["Ended"];
             artist.EditsPending = (int) reader ["EditsPending"];
             artist.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            fkList.AddRange(new int? [] { areaFk, beginAreaFk, endAreaFk });
-
-            return (artist, fkList);
+            return artist;
         }
 
-        public static (Label, IEnumerable<int?>) LabelFromReader(IDataReader reader)
+        public static Label LabelFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Label label = new();
-
-            List<int?> fkList = new List<int?>();
-
 
             label.Id = (int) reader ["Id"];
             label.Name = (string) reader ["Name"];
@@ -133,8 +131,8 @@ namespace MusicBrainz.DAL
 
             int? areaFk = ConvertValue<int?>(reader ["Area"]);
             // !!!!!!!!!!!!!!
+            label.Area = (areaFk is not null) ? (Area) foreignKeySubstitutioner(areaFk.Value, Tables.Area) : null;
             // !!!!!!!!!!!!!!
-
 
             label.BeginDateYear = ConvertValue<short?>(reader ["BeginDateYear"]);
             label.BeginDateMonth = ConvertValue<short?>(reader ["BeginDateMonth"]);
@@ -148,17 +146,12 @@ namespace MusicBrainz.DAL
             label.EditsPending = (int) reader ["EditsPending"];
             label.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            fkList.Add(areaFk);
-
-            return (label, fkList);
+            return label;
         }
 
-        public static (Place, IEnumerable<int?>) PlaceFromReader(IDataReader reader)
+        public static Place PlaceFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Place place = new();
-
-            List<int?> fkList = new List<int?>();
-
 
             place.Id = (int) reader ["Id"];
             place.Name = (string) reader ["Name"];
@@ -166,6 +159,7 @@ namespace MusicBrainz.DAL
 
             int? areaFk = ConvertValue<int?>(reader ["Area"]);
             // !!!!!!!!!!!!!!
+            place.Area = (areaFk is not null) ? (Area) foreignKeySubstitutioner(areaFk.Value, Tables.Area) : null;
             // !!!!!!!!!!!!!!
 
             place.Address = (string) reader ["Address"];
@@ -183,16 +177,12 @@ namespace MusicBrainz.DAL
             place.EditsPending = (int) reader ["EditsPending"];
             place.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            fkList.Add(areaFk);
-
-            return (place, fkList);
+            return place;
         }
 
-        public static (Recording, IEnumerable<int?>) RecordingFromReader(IDataReader reader)
+        public static Recording RecordingFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Recording recording = new();
-
-            IEnumerable<int?> fkList = new List<int?>();
 
             recording.Id = (int) reader ["Id"];
             recording.Name = (string) reader ["Name"];
@@ -202,15 +192,12 @@ namespace MusicBrainz.DAL
             recording.EditsPending = (int) reader ["EditsPending"];
             recording.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            return (recording, fkList);
+            return recording;
         }
 
-        public static (Release, IEnumerable<int?>) ReleaseFromReader(IDataReader reader)
+        public static Release ReleaseFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Release release = new();
-
-            List<int?> fkList = new List<int?>();
-
 
             release.Id = (int) reader ["Id"];
             release.Name = (string) reader ["Name"];
@@ -219,6 +206,7 @@ namespace MusicBrainz.DAL
             int releaseGroupFk = ConvertValue<int>(reader ["ReleaseGroup"]);
 
             // !!!!!!!!!!!!!!!!!
+            release.ReleaseGroup = (ReleaseGroup) foreignKeySubstitutioner(releaseGroupFk, Tables.ReleaseGroup);
             // !!!!!!!!!!!!!!!!!
 
             release.Barcode = ConvertValue<string?>(reader ["Barcode"]);
@@ -228,16 +216,12 @@ namespace MusicBrainz.DAL
             release.EditsPending = (int) reader ["EditsPending"];
             release.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            fkList.Add(releaseGroupFk);
-
-            return (release, fkList);
+            return release;
         }
 
-        public static (ReleaseGroup, IEnumerable<int?>) ReleaseGroupFromReader(IDataReader reader)
+        public static ReleaseGroup ReleaseGroupFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             ReleaseGroup releaseGroup = new();
-
-            IEnumerable<int?> fkList = new List<int?>();
 
             releaseGroup.Id = (int) reader ["Id"];
             releaseGroup.Name = (string) reader ["Name"];
@@ -245,30 +229,24 @@ namespace MusicBrainz.DAL
             releaseGroup.EditsPending = (int) reader ["EditsPending"];
             releaseGroup.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            return (releaseGroup, fkList);
+            return releaseGroup;
         }
 
-        public static (Url, IEnumerable<int?>) UrlFromReader(IDataReader reader)
+        public static Url UrlFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Url url = new();
-
-            IEnumerable<int?> fkList = new List<int?>();
-
 
             url.Id = (int) reader ["Id"];
             url.UrlValue = (string) reader ["UrlValue"];
             url.EditsPending = (int) reader ["EditsPending"];
             url.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            return (url, fkList);
+            return url;
         }
 
-        public static (Work, IEnumerable<int?>) WorkFromReader(IDataReader reader)
+        public static Work WorkFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             Work work = new();
-
-            IEnumerable<int?> fkList = new List<int?>();
-
 
             work.Id = (int) reader ["Id"];
             work.Name = (string) reader ["Name"];
@@ -276,15 +254,15 @@ namespace MusicBrainz.DAL
             work.EditsPending = (int) reader ["EditsPending"];
             work.LastUpdated = ConvertValue<DateTime?>(reader ["LastUpdated"]);
 
-            return (work, fkList);
+            return work;
         }
 
-        public static ITableInfo TableInfoFromReader(IDataReader reader)
+        public static ITableInfo TableInfoFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {
             DbTableInfo tableInfo = new()
             {
-                Name = (Tables) Enum.Parse(typeof(Tables), (string) reader ["Name"]),
-                NumberOfRecords = null
+                Name = (Tables) Enum.Parse(typeof(Tables), (string) reader ["TableName"]),
+                NumberOfRecords = (int) reader ["Records"]
             };
 
             return tableInfo;

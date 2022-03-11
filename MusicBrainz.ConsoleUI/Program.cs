@@ -1,15 +1,7 @@
 ﻿using MusicBrainz.ConsoleUI;
 
-UserMessages.GreetUser();
+MainUserFlow mainFlow = new();
 
-UserMessages.ShowAllTablesAndNumberOfRecords();
-
-UserMessages.PromptSelect();
-
-UserMessages.AskForPagination();
-
-UserMessages.ConfirmResult();
-
-UserMessages.SayGoodbye();
-
-Console.ReadKey();
+mainFlow.Start();
+mainFlow.ConfigureAction();
+mainFlow.Finish();

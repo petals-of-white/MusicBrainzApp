@@ -29,5 +29,23 @@ namespace MusicBrainz.Tools.Config
         {
             return Configuration.GetConnectionString(connectionStringName);
         }
+
+        /// <summary>
+        /// Shorthand for GetSection("TransferPaths") ["ImportFolderPath"]
+        /// </summary>
+        /// <returns></returns>
+        public static string GetImportFolder()
+        {
+            return Configuration.GetSection("TransferPaths") ["ImportFolderPath"];
+        }
+
+        /// <summary>
+        /// Shorthand for GetSection("TransferPaths") ["ExportFolderPath"];
+        /// </summary>
+        /// <returns></returns>
+        public static string GetExportFolder()
+        {
+            return Configuration.GetSection("TransferPaths") ["ExportFolderPath"];
+        }
     }
 }
