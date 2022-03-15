@@ -1,4 +1,5 @@
-﻿using MusicBrainz.Common.TableModels;
+﻿using MusicBrainz.Common.Enums;
+using MusicBrainz.Common.TableModels;
 
 namespace MusicBrainz.ConsoleUI.Interactive
 {
@@ -19,7 +20,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
             // printing files info
             for (int i = 0; i < files.Count; i++)
             {
-                string length = string.Empty;
+                string length;
                 if (files [i].Length >= 1 << 10)
                     length = string.Format("{0}Kb", files [i].Length >> 10);
                 else

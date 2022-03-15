@@ -11,7 +11,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
 
         internal static void AskForMode()
         {
-            Console.Write("Would you like to export or import the tables ('i' or 'e')? ");
+            Console.Write("You can export tables ('e'), import them ('i') or, alternatively, generate a report ('r'). Please enter a corresponding letter: ");
         }
 
         internal static void AskForPageNumber()
@@ -71,7 +71,6 @@ namespace MusicBrainz.ConsoleUI.Interactive
         internal static void SayGoodbye()
         {
             Console.WriteLine("Thank you for using our app. Have a good day.");
-            //Console.ReadKey();
         }
 
         internal static void ValuesNotInRange()

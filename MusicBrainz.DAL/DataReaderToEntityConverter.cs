@@ -11,13 +11,9 @@ namespace MusicBrainz.DAL
     {
         public delegate object? ForeignKeySubstitutioner(int id, Tables table);
 
-        /// <summary>
-        /// Return IEnumerable<T>; foreign keys will be provided by foreignKeySubstitutioner
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="reader"></param>
-        /// <param name="foreignKeySubstitutioner"></param>
-        /// <returns></returns>
+        /// <summary> Return IEnumerable<T>; foreign keys will be provided by
+        /// foreignKeySubstitutioner </summary> <typeparam name="T"></typeparam> <param
+        /// name="reader"></param> <param name="foreignKeySubstitutioner"></param> <returns></returns>
         public static IEnumerable<T> Select<T>(this IDataReader reader, ForeignKeySubstitutioner foreignKeySubstitutioner) where T : TableEntity
         {
             Type entityType = typeof(T);
@@ -28,8 +24,8 @@ namespace MusicBrainz.DAL
 
                 foreach (var property in entityType.GetProperties())
                 {
-                    // check if the property type is one of custom table entity types
-                    // (classes inherited from TableEntity)
+                    // check if the property type is one of custom table entity types (classes
+                    // inherited from TableEntity)
                     bool isForeignKey = typeof(TableEntity).IsAssignableFrom(property.PropertyType);
 
                     object? rawValue = (reader [property.Name] is DBNull) ? null : reader [property.Name];
