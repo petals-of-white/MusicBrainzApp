@@ -1,52 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
-  <Class Name="MusicBrainz.DAL.DbAccess" Collapsed="true">
-    <Position X="0.5" Y="2.5" Width="1.5" />
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MusicBrainz.DAL.DbAccess">
+    <Position X="0.5" Y="2.5" Width="3.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEAAAAAAAAAAAAiAEAACAIEACAAAIQABAAAAAAQA=</HashCode>
+      <HashCode>AAAQEAAIAAAAAAAAAgAAAAAAIAAAAAAIRADAAAABAQA=</HashCode>
       <FileName>DBAccess.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MusicBrainz.DAL.DataReaderToEntityConverterWithForeignKeysExport" Collapsed="true">
-    <Position X="2.25" Y="1.5" Width="1.5" />
-    <NestedTypes>
-      <Delegate Name="MusicBrainz.DAL.DataReaderToEntityConverterWithForeignKeysExport.ReaderToEntityConverter&lt;T&gt;" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>DataReaderToEntityConverterWithForeignKeysExport.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-      <Delegate Name="MusicBrainz.DAL.DataReaderToEntityConverterWithForeignKeysExport.ForeignKeyExporter" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>DataReaderToEntityConverterWithForeignKeysExport.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-    </NestedTypes>
+  <Class Name="MusicBrainz.DAL.DataReaderToEntityConverterOld" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACCkAQAAAAIAAAAAACAAYAgAAQAAAIAA=</HashCode>
-      <FileName>DataReaderToEntityConverterWithForeignKeysExport.cs</FileName>
+      <HashCode>AAAAgAAAAAAACCkAQAAAAIAAAAAACAAQAgAAQAAAIAA=</HashCode>
+      <FileName>DataReaderToEntityConverterOld.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MusicBrainz.DAL.DataReaderToEntityConverter" Collapsed="true">
-    <Position X="0.5" Y="1.5" Width="1.5" />
+  <Class Name="MusicBrainz.DAL.DataReaderToEntityConverter">
+    <Position X="0.75" Y="0.5" Width="2.5" />
     <NestedTypes>
       <Delegate Name="MusicBrainz.DAL.DataReaderToEntityConverter.ForeignKeySubstitutioner" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>DataReaderToEntityConverter.cs</NewMemberFileName>
         </TypeIdentifier>
       </Delegate>
-      <Delegate Name="MusicBrainz.DAL.DataReaderToEntityConverter.ReaderToEntityConverter&lt;T&gt;" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>DataReaderToEntityConverter.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-      <Delegate Name="MusicBrainz.DAL.DataReaderToEntityConverter.ForeignKeyExporter&lt;T&gt;" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>DataReaderToEntityConverter.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACCkAQAAAAIAAAAAACAAQAgAAQAAAIAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>DataReaderToEntityConverter.cs</FileName>
     </TypeIdentifier>
   </Class>

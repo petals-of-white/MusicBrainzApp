@@ -50,6 +50,13 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             _importConfig = importConfig;
         }
 
+        public string GenerateReport(Report report)
+        {
+            var reportData = _entityImporterExporter.GetReportData(report);
+            string serializedReport = _serializationManager.Serialize(reportData);
+            return serializedReport;
+        }
+
         /// <summary>
         /// </summary>
         /// <returns></returns>
