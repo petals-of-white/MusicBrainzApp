@@ -11,7 +11,8 @@ namespace MusicBrainz.ConsoleUI.Interactive
 
         internal static void AskForMode()
         {
-            Console.Write("Would you like to export or import the tables ('i' or 'e')? ");
+            Console.Write("You can export tables ('e'), import them ('i') or, alternatively, generate a report ('r'). Please enter a corresponding letter: ");
+            //Console.Write("Would you like to export or import the tables ('i' or 'e')? ");
         }
 
         internal static void AskForPageNumber()
@@ -27,6 +28,11 @@ namespace MusicBrainz.ConsoleUI.Interactive
         internal static void AskForRecordsPerPage()
         {
             Console.Write("How many records should a page contain? ");
+        }
+
+        internal static void ExplainReports()
+        {
+            Console.Write("Aside from exporting and importing, you can also generate one of the reports above. Please enter a correspoding number: ");
         }
 
         internal static void ExplainTableSelection()

@@ -33,6 +33,25 @@ namespace MusicBrainz.ConsoleUI.Interactive
         }
 
         /// <summary>
+        /// Shows reports description in a user-friendly (kind of) format
+        /// </summary>
+        public static void ShowReportsInfo()
+        {
+            Console.WriteLine("#".PadRight(_defaultPadding) + "Report description".PadRight(_defaultPadding));
+
+            Console.WriteLine("".PadRight(_defaultPadding * 3, '='));
+
+            var reports =
+            $"{(int) Report.PlacesInArea}".PadRight(_defaultPadding) + "Number of Places in each Area.\n".PadRight(_defaultPadding) +
+            $"{(int) Report.NumberOfArtistsWithAreaEnded}".PadRight(_defaultPadding) + "Number of Artists, whose Area has already 'ended'.\n".PadRight(_defaultPadding) +
+            $"{(int) Report.ReleaseGroups_ReleasesAvgEditsPending}".PadRight(_defaultPadding) + "Average number of Releases's edits pending for each Release Group.\n".PadRight(_defaultPadding);
+
+            Console.WriteLine(reports);
+
+            Console.WriteLine("".PadRight(_defaultPadding * 3, '='));
+        }
+
+        /// <summary>
         /// Shows tables info in a user friendly format
         /// </summary>
         /// <param name="tablesInfo"></param>
