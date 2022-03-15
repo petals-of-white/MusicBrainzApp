@@ -51,7 +51,6 @@ namespace MusicBrainz.DAL
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        ///
         private static T? ConvertValue<T>(object raw)
             =>
        (raw != DBNull.Value) ? (T) raw : default(T);

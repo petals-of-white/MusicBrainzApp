@@ -13,21 +13,8 @@ namespace MusicBrainz.DAL
 {
     public class DbAccess
     {
-        // to be removed later !!!
-        private readonly HashSet<Type> _allTypes = new()
-        {
-            typeof(Area),
-            typeof(Artist),
-            typeof(Recording),
-            typeof(Label),
-            typeof(Release),
-            typeof(ReleaseGroup),
-            typeof(Work),
-            typeof(Url),
-            typeof(Place),
-        };
-
         private string _connectionString = ConfigHelper.GetConnectionString();
+
         private LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
         /// <summary>
@@ -134,12 +121,12 @@ namespace MusicBrainz.DAL
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
-        /// /// <exception cref="Exception"></exception>
+        /// ///
+        /// <exception cref="Exception"></exception>
         public T? GetRecordById<T>(int id) where T : TableEntity
         {
             T? output = default;
@@ -695,7 +682,6 @@ namespace MusicBrainz.DAL
 
             return output;
         }
-
         /// <summary>
         /// Inserts a new records to a correspoding table.
         /// </summary>
@@ -737,55 +723,6 @@ namespace MusicBrainz.DAL
             connection.Execute("", commandType: CommandType.StoredProcedure);
 
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="SqlException"></exception>
-        ///
-        private DataTable GetQueryResult(string sql)
-        {
-            DataTable output = new();
-            SqlDataReader? reader;
-
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-
-                connection.Open();
-
-                using SqlCommand cmd = new SqlCommand();
-
-                cmd.Connection = connection;
-                cmd.CommandText = sql;
-
-                reader = cmd.ExecuteReader();
-
-                output = reader.GetSchemaTable();
-
-                output.Load(reader);
-
-                return output;
-            }
-            catch (SqlException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
         }
     }
 }

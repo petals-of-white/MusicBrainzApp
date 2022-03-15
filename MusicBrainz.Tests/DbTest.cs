@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using MusicBrainz.Common.Entities;
 using MusicBrainz.Common.Enums;
@@ -125,7 +126,7 @@ namespace MusicBrainz.Tests
 
         [Theory]
         [MemberData(nameof(GetTablesEnum))]
-        public void GetRecordsByIdList_ShouldBePerfectAndNotEmpty(Tables table)
+        public void GetRecordsByIdList_NotEmpty(Tables table)
         {
             DbAccess db = new();
             int numberOfRecords = 50000;
@@ -144,7 +145,7 @@ namespace MusicBrainz.Tests
         {
             DbAccess db = new();
 
-            List<object> entities = db.GetTableRecordsOldNoGeneric(tableOption, _recordsPerPageCheck, _pageNumberCheck).ToList();
+            List<object> entities = db.GetTableRecordsNonGeneric(tableOption, _recordsPerPageCheck, _pageNumberCheck).ToList();
 
             output.WriteLine($"Records exported - {entities!.Count} .Records per page - {_recordsPerPageCheck}. Page NUmber - {_pageNumberCheck}");
             Assert.True(true);
@@ -159,6 +160,56 @@ namespace MusicBrainz.Tests
         [Theory]
         [MemberData(nameof(GetTablesEnum))]
         public void GetTableRecords_GenericMappingDefault_ShouldBeGood(Tables table)
+        {
+            DbAccess db = new();
+
+            List<TableEntity> entities = default;
+
+            switch (table)
+            {
+                case Tables.Area:
+                    entities = db.GetTableRecordsNoPropMapping<Area>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Artist:
+                    entities = db.GetTableRecordsNoPropMapping<Artist>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Label:
+                    entities = db.GetTableRecordsNoPropMapping<Label>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Place:
+                    entities = db.GetTableRecordsNoPropMapping<Place>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Recording:
+                    entities = db.GetTableRecordsNoPropMapping<Recording>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Release:
+                    entities = db.GetTableRecordsNoPropMapping<Release>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.ReleaseGroup:
+                    entities = db.GetTableRecordsNoPropMapping<ReleaseGroup>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Work:
+                    entities = db.GetTableRecordsNoPropMapping<Work>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+
+                case Tables.Url:
+                    entities = db.GetTableRecordsNoPropMapping<Url>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
+                    break;
+            }
+            output.WriteLine($"Records exported - {entities!.Count} .Records per page - {_recordsPerPageCheck}. Page NUmber - {_pageNumberCheck}");
+            Assert.True(true);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTablesEnum))]
+        public void GetTableRecords_GenericMappingProperties_ShouldBeGood(Tables table)
         {
             DbAccess db = new();
 
@@ -200,56 +251,6 @@ namespace MusicBrainz.Tests
 
                 case Tables.Url:
                     entities = db.GetTableRecords<Url>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-            }
-            output.WriteLine($"Records exported - {entities!.Count} .Records per page - {_recordsPerPageCheck}. Page NUmber - {_pageNumberCheck}");
-            Assert.True(true);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTablesEnum))]
-        public void GetTableRecords_GenericMappingProperties_ShouldBeGood(Tables table)
-        {
-            DbAccess db = new();
-
-            List<TableEntity> entities = default;
-
-            switch (table)
-            {
-                case Tables.Area:
-                    entities = db.GetTableRecordsGenericMapProperties<Area>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Artist:
-                    entities = db.GetTableRecordsGenericMapProperties<Artist>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Label:
-                    entities = db.GetTableRecordsGenericMapProperties<Label>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Place:
-                    entities = db.GetTableRecordsGenericMapProperties<Place>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Recording:
-                    entities = db.GetTableRecordsGenericMapProperties<Recording>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Release:
-                    entities = db.GetTableRecordsGenericMapProperties<Release>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.ReleaseGroup:
-                    entities = db.GetTableRecordsGenericMapProperties<ReleaseGroup>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Work:
-                    entities = db.GetTableRecordsGenericMapProperties<Work>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
-                    break;
-
-                case Tables.Url:
-                    entities = db.GetTableRecordsGenericMapProperties<Url>(_recordsPerPageCheck, _pageNumberCheck).Cast<TableEntity>().ToList();
                     break;
             }
 

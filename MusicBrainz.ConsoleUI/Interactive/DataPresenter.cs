@@ -1,4 +1,5 @@
-﻿using MusicBrainz.Common.TableModels;
+﻿using MusicBrainz.Common.Enums;
+using MusicBrainz.Common.TableModels;
 
 namespace MusicBrainz.ConsoleUI.Interactive
 {

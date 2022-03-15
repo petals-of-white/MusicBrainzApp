@@ -13,8 +13,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         private DirectoryInfo _importFolder = Directory.CreateDirectory(ConfigHelper.GetImportFolder());
 
         /// <summary>
-        /// Please provide the same serializationManager for both
-        /// EntitiesFileManager and Db Entity Serializer
+        /// Please provide the same serializationManager for both EntitiesFileManager and Db Entity Serializer
         /// </summary>
         /// <param name="serializationManager"></param>
         public EntitiesFileManager(string format = ".json")
@@ -27,7 +26,6 @@ namespace MusicBrainz.ConsoleUI.Interactive
         public DirectoryInfo ImportFolder { get => _importFolder; }
 
         /// <summary>
-        ///
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException">UF exception</exception>
@@ -43,7 +41,6 @@ namespace MusicBrainz.ConsoleUI.Interactive
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException">UF exception</exception>
@@ -61,9 +58,15 @@ namespace MusicBrainz.ConsoleUI.Interactive
 
         public string ReadFromFile(FileInfo file) => File.ReadAllText(file.FullName);
 
-        internal void WriteToFile(Tables tableName, string serializedContent)
+        /// <summary>
+        /// Writes serialized table entities to file
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="serializedContent"></param>
+        public void WriteToFile(Tables tableName, string serializedContent)
         {
             string pathToExportFile = Path.Combine(ExportFolder.FullName, $"{tableName}{Format}");
+
             File.WriteAllText(pathToExportFile, serializedContent);
         }
     }

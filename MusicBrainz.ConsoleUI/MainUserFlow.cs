@@ -70,7 +70,7 @@ namespace MusicBrainz.ConsoleUI
             }
         }
 
-        public void Finish()
+        public void DoAction()
         {
             // export
             _mainSerializer.ConfigureExport(_exportConfig);
@@ -83,7 +83,7 @@ namespace MusicBrainz.ConsoleUI
                 case Mode.Export:
                     Console.WriteLine("Exporting...");
 
-                    (Dictionary<Tables, string> serializedTables, _) = _mainSerializer.SerializeTabelEntitiesTypeMapped();
+                    (Dictionary<Tables, string> serializedTables, _) = _mainSerializer.SerializeTableEntitiesTypeMapped();
 
                     foreach (KeyValuePair<Tables, string> serializedTable in serializedTables)
                     {
@@ -183,8 +183,6 @@ namespace MusicBrainz.ConsoleUI
 
             string? input;
             bool proceedFurther = false;
-
-            //GeneralMessages.ExplainTableSelection();
 
             Console.Write("Your choice: ");
 
