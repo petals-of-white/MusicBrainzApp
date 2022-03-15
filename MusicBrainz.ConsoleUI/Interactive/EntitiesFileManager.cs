@@ -11,6 +11,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
     {
         private DirectoryInfo _exportFolder = Directory.CreateDirectory(ConfigHelper.GetExportFolder());
         private DirectoryInfo _importFolder = Directory.CreateDirectory(ConfigHelper.GetImportFolder());
+        private DirectoryInfo _reportFolder = Directory.CreateDirectory(ConfigHelper.GetReportFolder());
 
         /// <summary>
         /// Please provide the same serializationManager for both EntitiesFileManager and Db Entity Serializer
@@ -24,6 +25,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         public DirectoryInfo ExportFolder { get => _exportFolder; }
         public string Format { get; private set; }
         public DirectoryInfo ImportFolder { get => _importFolder; }
+        public DirectoryInfo ReportFolder { get => _reportFolder; }
 
         /// <summary>
         /// </summary>
@@ -68,6 +70,18 @@ namespace MusicBrainz.ConsoleUI.Interactive
             string pathToExportFile = Path.Combine(ExportFolder.FullName, $"{tableName}{Format}");
 
             File.WriteAllText(pathToExportFile, serializedContent);
+        }
+
+        /// <summary>
+        /// Writes a report to a file
+        /// </summary>
+        /// <param name="reportName"></param>
+        /// <param name="serializedReport"></param>
+        public void WriteToFile(Report reportName, string serializedReport)
+        {
+            string pathToReportFile = Path.Combine(ReportFolder.FullName, $"{reportName}{Format}");
+
+            File.WriteAllText(pathToReportFile, serializedReport);
         }
     }
 }

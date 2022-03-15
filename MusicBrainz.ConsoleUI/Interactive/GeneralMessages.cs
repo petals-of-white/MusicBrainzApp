@@ -29,6 +29,11 @@ namespace MusicBrainz.ConsoleUI.Interactive
             Console.Write("How many records should a page contain? ");
         }
 
+        internal static void ExplainReports()
+        {
+            Console.Write("Aside from exporting and importing, you can also generate one of the reports above. Please enter a correspoding number: ");
+        }
+
         internal static void ExplainTableSelection()
         {
             Console.WriteLine("To select a table, please enter a corresponding number of a table. (e.g. '1' or '3'). " +

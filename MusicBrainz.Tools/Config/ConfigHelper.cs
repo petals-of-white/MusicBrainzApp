@@ -39,6 +39,11 @@ namespace MusicBrainz.Tools.Config
             return Configuration.GetSection("TransferPaths") ["ImportFolderPath"];
         }
 
+        public static string GetReportFolder()
+        {
+            return Configuration.GetSection("TransferPaths") ["ReportFolderPath"];
+        }
+
         /// <summary>
         /// Shorthand for GetSection("TransferPaths") ["ExportFolderPath"];
         /// </summary>
