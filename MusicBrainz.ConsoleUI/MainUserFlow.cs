@@ -21,6 +21,8 @@ namespace MusicBrainz.ConsoleUI
 
         private Mode _mode = Mode.None;
 
+        private Report _report;
+
         private ISerializationManager _serializationManager = new JsonSerializationManager();
 
         [Flags]
@@ -28,7 +30,8 @@ namespace MusicBrainz.ConsoleUI
         {
             None,
             Export,
-            Import
+            Import,
+            Report
         }
 
         #region Main methods
@@ -56,6 +59,14 @@ namespace MusicBrainz.ConsoleUI
 
                     SelectTablesToExport();
                     ConfigurePaging();
+
+                    break;
+
+                case "r" or "report":
+                    _mode = Mode.Report;
+                    Console.WriteLine("Reports mode!");
+
+                    SelectReport();
 
                     break;
 
@@ -95,6 +106,13 @@ namespace MusicBrainz.ConsoleUI
                 case Mode.Import:
                     Console.WriteLine("Importing...");
                     _mainSerializer.ImportSerializedTableEntitiesNew();
+                    break;
+
+                case Mode.Report:
+                    Console.WriteLine("Generating a report...");
+
+                    var reportTable = _mainSerializer.GenerateReport(_report);
+                    _fileManager.WriteToFile(_report, reportTable);
                     break;
             }
 
@@ -266,6 +284,31 @@ namespace MusicBrainz.ConsoleUI
                 }
             }
             return choicesResult;
+        }
+
+        private void SelectReport()
+        {
+            DataPresenter.ShowReportsInfo();
+
+            GeneralMessages.ExplainReports();
+
+            int intValue;
+
+            while (
+                (
+                int.TryParse(Console.ReadLine()!.Trim(), out intValue)
+                &&
+                Enum.IsDefined(typeof(Report), intValue)
+                )
+                ==
+                false
+                )
+            {
+                GeneralMessages.WrongInputData();
+                Console.Write("Please try again: ");
+            }
+            //selectedReport =
+            _report = (Report) intValue;
         }
 
         private void SelectTablesToExport()

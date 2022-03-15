@@ -27,6 +27,26 @@ namespace MusicBrainz.BLL.DbEntitySerialization.DataTransfer
         public ICollection<T> Export<T>(int? recordsPerPage, int? pageNumber) where T : TableEntity =>
                         _db.GetTableRecords<T>(recordsPerPage, pageNumber);
 
+        public DataTable GetReportData(Report report)
+        {
+            DataTable reportOutput = new();
+            switch (report)
+            {
+                case Report.PlacesInArea:
+                    reportOutput = _db.GetPlacesInArea();
+                    break;
+
+                case Report.NumberOfArtistsWithAreaEnded:
+                    reportOutput = _db.GetNumberOfArtistsWithAreaEnded();
+                    break;
+
+                case Report.ReleaseGroups_ReleasesAvgEditsPending:
+                    reportOutput = _db.GetReleaseGroups_ReleasesAvgEditsPending();
+                    break;
+            }
+            return reportOutput;
+        }
+
         /// <summary>
         /// </summary>
         /// <returns></returns>

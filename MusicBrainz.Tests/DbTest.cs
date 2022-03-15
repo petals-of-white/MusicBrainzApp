@@ -277,6 +277,33 @@ namespace MusicBrainz.Tests
             }
         }
 
+        [Theory]
+        [InlineData(Report.PlacesInArea)]
+        [InlineData(Report.NumberOfArtistsWithAreaEnded)]
+        [InlineData(Report.ReleaseGroups_ReleasesAvgEditsPending)]
+        public void Report_ReturnsSomething(Report report)
+        {
+            var db = new DbAccess();
+            DataTable reportOutput = new();
+
+            switch (report)
+            {
+                case Report.PlacesInArea:
+                    reportOutput = db.GetPlacesInArea();
+                    break;
+
+                case Report.NumberOfArtistsWithAreaEnded:
+                    reportOutput = db.GetNumberOfArtistsWithAreaEnded();
+                    break;
+
+                case Report.ReleaseGroups_ReleasesAvgEditsPending:
+                    reportOutput = db.GetReleaseGroups_ReleasesAvgEditsPending();
+                    break;
+            }
+            output.WriteLine(reportOutput.ToString());
+            Assert.True(reportOutput.Rows.Count > 0);
+        }
+
         [Fact]
         public void TablesInfo_ShouldWork()
         {
