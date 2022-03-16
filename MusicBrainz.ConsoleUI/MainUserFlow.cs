@@ -294,15 +294,7 @@ namespace MusicBrainz.ConsoleUI
 
             int intValue;
 
-            while (
-                (
-                int.TryParse(Console.ReadLine()!.Trim(), out intValue)
-                &&
-                Enum.IsDefined(typeof(Report), intValue)
-                )
-                ==
-                false
-                )
+            while (int.TryParse(Console.ReadLine()!.Trim(), out intValue) && Enum.IsDefined(typeof(Report), intValue) == false)
             {
                 GeneralMessages.WrongInputData();
                 Console.Write("Please try again: ");

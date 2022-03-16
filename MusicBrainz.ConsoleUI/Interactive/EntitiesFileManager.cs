@@ -17,7 +17,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         /// Please provide the same serializationManager for both EntitiesFileManager and Db Entity Serializer
         /// </summary>
         /// <param name="serializationManager"></param>
-        public EntitiesFileManager(string format = ".json")
+        public EntitiesFileManager(string format = "json")
         {
             Format = format;
         }
@@ -33,7 +33,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         /// <exception cref="UserFriendlyException">UF exception</exception>
         public IList<FileInfo> GetExportFiles()
         {
-            var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}{Format}");
+            var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}.{Format}");
 
             var exportFiles = (from file in _exportFolder.GetFiles()
                                where entityTableFiles.Contains(file.Name)
@@ -49,7 +49,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
 
         public IList<FileInfo> GetImportFiles()
         {
-            var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}{Format}");
+            var entityTableFiles = Enum.GetNames(typeof(Tables)).Select(x => $"{x}.{Format}");
 
             var importFiles = (from file in _importFolder.GetFiles()
                                where entityTableFiles.Contains(file.Name)
@@ -67,7 +67,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         /// <param name="serializedContent"></param>
         public void WriteToFile(Tables tableName, string serializedContent)
         {
-            string pathToExportFile = Path.Combine(ExportFolder.FullName, $"{tableName}{Format}");
+            string pathToExportFile = Path.Combine(ExportFolder.FullName, $"{tableName}.{Format}");
 
             File.WriteAllText(pathToExportFile, serializedContent);
         }
@@ -79,7 +79,7 @@ namespace MusicBrainz.ConsoleUI.Interactive
         /// <param name="serializedReport"></param>
         public void WriteToFile(Report reportName, string serializedReport)
         {
-            string pathToReportFile = Path.Combine(ReportFolder.FullName, $"{reportName}{Format}");
+            string pathToReportFile = Path.Combine(ReportFolder.FullName, $"{reportName}.{Format}");
 
             File.WriteAllText(pathToReportFile, serializedReport);
         }
