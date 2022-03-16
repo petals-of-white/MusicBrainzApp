@@ -16,7 +16,7 @@ namespace MusicBrainz.DAL
 
         public delegate void ForeignKeyExporter<T>(IDataReader reader);
 
-        public static IEnumerable<T> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection, ForeignKeyExporter<T> foreignKeyExporter, IEnumerable<int> outputCollection) where T : new()
+        public static IEnumerable<T> Select<T>(this IDataReader reader, ReaderToEntityConverter<T> projection, ForeignKeyExporter<T> foreignKeyExporter) where T : new()
         {
             while (reader.Read())
             {
@@ -51,10 +51,9 @@ namespace MusicBrainz.DAL
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        ///
         private static T? ConvertValue<T>(object raw)
             =>
-       (raw != DBNull.Value) ? (T) raw : default(T);
+       (raw != DBNull.Value) ? (T) raw : default;
 
         public static Area AreaFromReader(IDataReader reader, ForeignKeySubstitutioner? foreignKeySubstitutioner = null)
         {

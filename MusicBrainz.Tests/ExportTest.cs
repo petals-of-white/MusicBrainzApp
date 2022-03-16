@@ -45,7 +45,7 @@ namespace MusicBrainz.Tests
             //serializing ...
             DbEntitiesSerializer dbSerializer = new(config);
 
-            dbSerializer.SerializeTabelEntitiesTypeMapped();
+            dbSerializer.SerializeTableEntitiesTypeMapped();
 
             // Reading json from file
             string json = File.ReadAllText($"export/{table}.json");

@@ -1,4 +1,5 @@
-﻿using MusicBrainz.BLL.DbEntitySerialization.DataTransfer;
+﻿using System.Data;
+using MusicBrainz.BLL.DbEntitySerialization.DataTransfer;
 using MusicBrainz.BLL.DbEntitySerialization.Serialization;
 using MusicBrainz.BLL.Exceptions;
 using MusicBrainz.Common.Entities;
@@ -49,8 +50,14 @@ namespace MusicBrainz.BLL.DbEntitySerialization
             _importConfig = importConfig;
         }
 
+        public string GenerateReport(Report report)
+        {
+            var reportData = _entityImporterExporter.GetReportData(report);
+            string serializedReport = _serializationManager.Serialize(reportData);
+            return serializedReport;
+        }
+
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException">User friendly exception</exception>
@@ -171,11 +178,31 @@ namespace MusicBrainz.BLL.DbEntitySerialization
         }
 
         /// <summary>
+        /// </summary>
+        /// <returns>A Dictionary with Table enum as key and serialized entities as values</returns>
+        public Dictionary<Tables, string> SerializeTableEntities()
+        {
+            Dictionary<Tables, string> serializedOutput = new();
+
+            foreach (var table in _exportConfig.TablesToExport)
+            {
+                // get entities list
+                var entities = _entityImporterExporter.Export(table, _exportConfig.RecordsPerPage, _exportConfig.PageNumber);
+
+                //serialize them to json
+                string serializedEntities = _serializationManager.Serialize(entities);
+
+                serializedOutput.Add(table, serializedEntities);
+            }
+            return serializedOutput;
+        }
+
+        /// <summary>
         /// Exports and serializes table entities to string
         /// </summary>
         /// <returns></returns>
-        /// <exception cref=""
-        public (Dictionary<Tables, string> serializedEntities, string format) SerializeTabelEntitiesTypeMapped()
+        /// <exception cref=""></exception>
+        public (Dictionary<Tables, string> serializedEntities, string format) SerializeTableEntitiesTypeMapped()
         {
             Dictionary<Tables, string> serializedOutput = new();
             string serializedEntities;
@@ -232,33 +259,6 @@ namespace MusicBrainz.BLL.DbEntitySerialization
                 serializedOutput.Add(table, serializedEntities);
             }
             return (serializedOutput, _serializationManager.Format);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns>A Dictionary with Table enum as key and serialized entities as values</returns>
-        public Dictionary<Tables, string> SerializeTableEntities()
-        {
-            Dictionary<Tables, string> serializedOutput = new();
-
-            foreach (var table in _exportConfig.TablesToExport)
-            {
-                // get entities list
-                var entities = _entityImporterExporter.Export(table, _exportConfig.RecordsPerPage, _exportConfig.PageNumber);
-
-                //serialize them to json
-                string serializedEntities = _serializationManager.Serialize(entities);
-
-                serializedOutput.Add(table, serializedEntities);
-
-                //var directory = Directory.CreateDirectory("export").Name;
-                //var fileName = $"{table}.json";
-                //string fullPath = Path.Combine(directory, fileName);
-
-                //File.WriteAllText(fullPath, serializedEntities);
-            }
-            return serializedOutput;
         }
     }
 }

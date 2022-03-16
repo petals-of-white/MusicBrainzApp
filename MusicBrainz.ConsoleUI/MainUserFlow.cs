@@ -21,6 +21,8 @@ namespace MusicBrainz.ConsoleUI
 
         private Mode _mode = Mode.None;
 
+        private Report _report;
+
         private ISerializationManager _serializationManager = new JsonSerializationManager();
 
         [Flags]
@@ -28,7 +30,8 @@ namespace MusicBrainz.ConsoleUI
         {
             None,
             Export,
-            Import
+            Import,
+            Report
         }
 
         #region Main methods
@@ -59,6 +62,14 @@ namespace MusicBrainz.ConsoleUI
 
                     break;
 
+                case "r" or "report":
+                    _mode = Mode.Report;
+                    Console.WriteLine("Reports mode!");
+
+                    SelectReport();
+
+                    break;
+
                 default:
                     _mode = Mode.Export;
                     Console.WriteLine("Export mode!");
@@ -70,7 +81,7 @@ namespace MusicBrainz.ConsoleUI
             }
         }
 
-        public void Finish()
+        public void DoAction()
         {
             // export
             _mainSerializer.ConfigureExport(_exportConfig);
@@ -83,7 +94,7 @@ namespace MusicBrainz.ConsoleUI
                 case Mode.Export:
                     Console.WriteLine("Exporting...");
 
-                    (Dictionary<Tables, string> serializedTables, _) = _mainSerializer.SerializeTabelEntitiesTypeMapped();
+                    (Dictionary<Tables, string> serializedTables, _) = _mainSerializer.SerializeTableEntitiesTypeMapped();
 
                     foreach (KeyValuePair<Tables, string> serializedTable in serializedTables)
                     {
@@ -95,6 +106,13 @@ namespace MusicBrainz.ConsoleUI
                 case Mode.Import:
                     Console.WriteLine("Importing...");
                     _mainSerializer.ImportSerializedTableEntitiesNew();
+                    break;
+
+                case Mode.Report:
+                    Console.WriteLine("Generating a report...");
+
+                    var reportTable = _mainSerializer.GenerateReport(_report);
+                    _fileManager.WriteToFile(_report, reportTable);
                     break;
             }
 
@@ -184,8 +202,6 @@ namespace MusicBrainz.ConsoleUI
             string? input;
             bool proceedFurther = false;
 
-            //GeneralMessages.ExplainTableSelection();
-
             Console.Write("Your choice: ");
 
             while (proceedFurther == false)
@@ -268,6 +284,23 @@ namespace MusicBrainz.ConsoleUI
                 }
             }
             return choicesResult;
+        }
+
+        private void SelectReport()
+        {
+            DataPresenter.ShowReportsInfo();
+
+            GeneralMessages.ExplainReports();
+
+            int intValue;
+
+            while (int.TryParse(Console.ReadLine()!.Trim(), out intValue) && Enum.IsDefined(typeof(Report), intValue) == false)
+            {
+                GeneralMessages.WrongInputData();
+                Console.Write("Please try again: ");
+            }
+            //selectedReport =
+            _report = (Report) intValue;
         }
 
         private void SelectTablesToExport()

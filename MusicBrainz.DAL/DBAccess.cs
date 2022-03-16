@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Text;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -13,21 +13,8 @@ namespace MusicBrainz.DAL
 {
     public class DbAccess
     {
-        // to be removed later !!!
-        private readonly HashSet<Type> _allTypes = new()
-        {
-            typeof(Area),
-            typeof(Artist),
-            typeof(Recording),
-            typeof(Label),
-            typeof(Release),
-            typeof(ReleaseGroup),
-            typeof(Work),
-            typeof(Url),
-            typeof(Place),
-        };
-
         private string _connectionString = ConfigHelper.GetConnectionString();
+
         private LoggerBase _logger = new FileLoggerFactory("musicbrainz.log").CreateLogger();
 
         /// <summary>
@@ -62,7 +49,7 @@ namespace MusicBrainz.DAL
                 {
                     connection.Open();
 
-                    using (SqlCommand cmd = new SqlCommand())
+                    using (SqlCommand cmd = new())
                     {
                         cmd.Connection = connection;
 
@@ -92,54 +79,43 @@ namespace MusicBrainz.DAL
             return output;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="SqlException"></exception>
-        public int? GetNumberOfRows(string tableName)
+        public DataTable GetNumberOfArtistsWithAreaEnded()
         {
-            int? rows = null;
-
-            string sql = @$"USE MusicBrainz;
-                            SELECT COUNT(*)
-                            FROM {tableName};";
-
-            var queryResult = GetQueryResult(sql);
-
-            try
+            DataTable output = new();
+            using (var connection = new SqlConnection(_connectionString))
             {
-                object? rawData = queryResult.Rows [0].ItemArray [0];
+                connection.Open();
+                SqlCommand command = new(cmdText: "spNumberOfArtistsWithAreaEnded", connection: connection);
+                command.CommandType = CommandType.StoredProcedure;
 
-                rows = Convert.ToInt32(rawData);
+                SqlDataReader reader = command.ExecuteReader();
+                output.Load(reader);
+                return output;
             }
-            catch (DeletedRowInaccessibleException ex)
-            {
-                // log here
-                _logger.Log(ex.ToString());
-            }
-            catch (IndexOutOfRangeException ex)
-            {
-                // log here
-                _logger.Log(ex.ToString());
-            }
-            catch (FormatException ex)
-            {
-                _logger.Log(ex.ToString());
-            }
+        }
 
-            return rows;
+        public DataTable GetPlacesInArea()
+        {
+            DataTable output = new();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new(cmdText: "spPlacesInArea", connection: connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                SqlDataReader reader = command.ExecuteReader();
+                output.Load(reader);
+                return output;
+            }
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="SqlException"></exception>
-        /// /// <exception cref="Exception"></exception>
+        /// ///
+        /// <exception cref="Exception"></exception>
         public T? GetRecordById<T>(int id) where T : TableEntity
         {
             T? output = default;
@@ -212,7 +188,7 @@ namespace MusicBrainz.DAL
                 {
                     connection.Open();
 
-                    using (SqlCommand cmd = new SqlCommand())
+                    using (SqlCommand cmd = new())
                     {
                         cmd.Connection = connection;
 
@@ -281,7 +257,6 @@ namespace MusicBrainz.DAL
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="ids"></param>
         /// <param name="tableOption"></param>
@@ -313,7 +288,7 @@ namespace MusicBrainz.DAL
                 {
                     connection.Open();
 
-                    using (SqlCommand cmd = new SqlCommand())
+                    using (SqlCommand cmd = new())
                     {
                         cmd.Connection = connection;
 
@@ -359,7 +334,7 @@ namespace MusicBrainz.DAL
                                 output = reader.Select(WorkFromReader);
                                 break;
                         }
-                        output = output.ToArray();
+                        output = output!.ToArray();
                         return output;
                     }
                 }
@@ -381,7 +356,222 @@ namespace MusicBrainz.DAL
             }
         }
 
+        public DataTable GetReleaseGroups_ReleasesAvgEditsPending()
+        {
+            DataTable output = new();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var command = new SqlCommand(cmdText: "spReleaseGroups_ReleasesAvgEditsPending", connection: connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                SqlDataReader reader = command.ExecuteReader();
+                output.Load(reader);
+                return output;
+            }
+        }
+
         public ICollection<T> GetTableRecords<T>(int? recordsPerPage = null, int? pageNumber = null) where T : TableEntity
+        {
+            Type table = typeof(T);
+
+            List<T> output = default;
+
+            string sql;
+            SqlDataReader? reader;
+
+            if (recordsPerPage is null || pageNumber is null)
+            {
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               *
+                            FROM
+                               {table.Name};";
+            }
+            else
+            {
+                if (recordsPerPage < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
+                }
+
+                if (pageNumber < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
+                }
+
+                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
+
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               *
+                            FROM
+                               {table.Name}
+                            ORDER BY Id
+                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand cmd = new())
+                    {
+                        cmd.Connection = connection;
+
+                        cmd.CommandText = sql;
+
+                        reader = cmd.ExecuteReader();
+
+                        output = reader.Select<T>(GetRecordById).ToList();
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Gets table records from the db according to Table option, also optionally pagination
+        /// </summary>
+        /// <param name="tableOption"></param>
+        /// <param name="recordsPerPage"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns>An IEnumerable of entities objects</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public ICollection<object> GetTableRecordsNonGeneric(Tables tableOption, int? recordsPerPage = null, int? pageNumber = null)
+        {
+            SqlDataReader? reader;
+            string sql;
+            IEnumerable<object> enumerableRawResult = default;
+            ICollection<object> output = default;
+
+            if (recordsPerPage is null || pageNumber is null)
+            {
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               *
+                            FROM
+                               {tableOption};";
+            }
+            else
+            {
+                if (recordsPerPage < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
+                }
+
+                if (pageNumber < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
+                }
+
+                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
+
+                sql = @$"USE MusicBrainz;
+                            SELECT
+                               *
+                            FROM
+                               {tableOption}
+                            ORDER BY Id
+                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = connection;
+
+                        cmd.CommandText = sql;
+
+                        reader = cmd.ExecuteReader();
+
+                        switch (tableOption)
+                        {
+                            case Tables.Area:
+                                enumerableRawResult = reader.Select(AreaFromReader);
+                                break;
+
+                            case Tables.Artist:
+                                enumerableRawResult = reader.Select(ArtistFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Label:
+                                enumerableRawResult = reader.Select(LabelFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Place:
+                                enumerableRawResult = reader.Select(PlaceFromReader, GetRecordById);
+                                break;
+
+                            case Tables.Recording:
+                                enumerableRawResult = reader.Select(RecordingFromReader);
+                                break;
+
+                            case Tables.Release:
+                                enumerableRawResult = reader.Select(ReleaseFromReader, GetRecordById);
+                                break;
+
+                            case Tables.ReleaseGroup:
+                                enumerableRawResult = reader.Select(ReleaseGroupFromReader);
+                                break;
+
+                            case Tables.Url:
+                                enumerableRawResult = reader.Select(UrlFromReader);
+                                break;
+
+                            case Tables.Work:
+                                enumerableRawResult = reader.Select(WorkFromReader);
+                                break;
+                        }
+                        output = enumerableRawResult!.ToList();
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(ex.ToString());
+                throw;
+            }
+
+            return output;
+        }
+
+        public ICollection<T> GetTableRecordsNoPropMapping<T>(int? recordsPerPage = null, int? pageNumber = null) where T : TableEntity
         {
             Type table = typeof(T);
 
@@ -497,205 +687,6 @@ namespace MusicBrainz.DAL
             return output;
         }
 
-        public ICollection<T> GetTableRecordsGenericMapProperties<T>(int? recordsPerPage = null, int? pageNumber = null) where T : TableEntity
-        {
-            Type table = typeof(T);
-
-            List<T> output = default;
-
-            string sql;
-            SqlDataReader? reader;
-
-            if (recordsPerPage is null || pageNumber is null)
-            {
-                sql = @$"USE MusicBrainz;
-                            SELECT
-                               *
-                            FROM
-                               {table.Name};";
-            }
-            else
-            {
-                if (recordsPerPage < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
-                }
-
-                if (pageNumber < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
-                }
-
-                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
-
-                sql = @$"USE MusicBrainz;
-                            SELECT
-                               *
-                            FROM
-                               {table.Name}
-                            ORDER BY Id
-                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
-            }
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    using (SqlCommand cmd = new())
-                    {
-                        cmd.Connection = connection;
-
-                        cmd.CommandText = sql;
-
-                        reader = cmd.ExecuteReader();
-
-                        output = reader.Select<T>(GetRecordById).ToList();
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        /// Gets table records from the db according to Table option,
-        /// also optionally pagination
-        /// </summary>
-        /// <param name="tableOption"></param>
-        /// <param name="recordsPerPage"></param>
-        /// <param name="pageNumber"></param>
-        /// <returns>An IEnumerable of entities objects</returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public ICollection<object> GetTableRecordsOldNoGeneric(Tables tableOption, int? recordsPerPage = null, int? pageNumber = null)
-        {
-            SqlDataReader? reader;
-            string sql;
-            IEnumerable<object> enumerableRawResult = default;
-            ICollection<object> output = default;
-
-            if (recordsPerPage is null || pageNumber is null)
-            {
-                sql = @$"USE MusicBrainz;
-                            SELECT
-                               *
-                            FROM
-                               {tableOption};";
-            }
-            else
-            {
-                if (recordsPerPage < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(recordsPerPage), recordsPerPage, "You can not have negative records per page");
-                }
-
-                if (pageNumber < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(pageNumber), pageNumber, "You can not have negative page number");
-                }
-
-                int skippedRecords = recordsPerPage.Value * (pageNumber.Value - 1);
-
-                sql = @$"USE MusicBrainz;
-                            SELECT
-                               *
-                            FROM
-                               {tableOption}
-                            ORDER BY Id
-                            OFFSET {skippedRecords} ROWS FETCH NEXT {recordsPerPage} ROWS ONLY;";
-            }
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    using (SqlCommand cmd = new SqlCommand())
-                    {
-                        cmd.Connection = connection;
-
-                        cmd.CommandText = sql;
-
-                        reader = cmd.ExecuteReader();
-
-                        switch (tableOption)
-                        {
-                            case Tables.Area:
-                                enumerableRawResult = reader.Select(AreaFromReader);
-                                break;
-
-                            case Tables.Artist:
-                                enumerableRawResult = reader.Select(ArtistFromReader, GetRecordById);
-                                break;
-
-                            case Tables.Label:
-                                enumerableRawResult = reader.Select(LabelFromReader, GetRecordById);
-                                break;
-
-                            case Tables.Place:
-                                enumerableRawResult = reader.Select(PlaceFromReader, GetRecordById);
-                                break;
-
-                            case Tables.Recording:
-                                enumerableRawResult = reader.Select(RecordingFromReader);
-                                break;
-
-                            case Tables.Release:
-                                enumerableRawResult = reader.Select(ReleaseFromReader, GetRecordById);
-                                break;
-
-                            case Tables.ReleaseGroup:
-                                enumerableRawResult = reader.Select(ReleaseGroupFromReader);
-                                break;
-
-                            case Tables.Url:
-                                enumerableRawResult = reader.Select(UrlFromReader);
-                                break;
-
-                            case Tables.Work:
-                                enumerableRawResult = reader.Select(WorkFromReader);
-                                break;
-                        }
-                        output = enumerableRawResult!.ToList();
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-
-            return output;
-        }
-
         /// <summary>
         /// Inserts a new records to a correspoding table.
         /// </summary>
@@ -726,65 +717,6 @@ namespace MusicBrainz.DAL
 
                     int affectedRows = connection.Execute(sql: storedProcedureName, param: entityParams, commandType: CommandType.StoredProcedure);
                 }
-            }
-        }
-
-        public void InsertEntities(Tables table, IEnumerable<object> entities)
-        {
-            using SqlConnection connection = new();
-
-            string storedProcedure = $"";
-            connection.Execute("", commandType: CommandType.StoredProcedure);
-
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="SqlException"></exception>
-        ///
-        private DataTable GetQueryResult(string sql)
-        {
-            DataTable output = new();
-            SqlDataReader? reader;
-
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-
-                connection.Open();
-
-                using SqlCommand cmd = new SqlCommand();
-
-                cmd.Connection = connection;
-                cmd.CommandText = sql;
-
-                reader = cmd.ExecuteReader();
-
-                output = reader.GetSchemaTable();
-
-                output.Load(reader);
-
-                return output;
-            }
-            catch (SqlException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(ex.ToString());
-                throw;
             }
         }
     }

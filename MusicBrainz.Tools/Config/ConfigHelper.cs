@@ -6,7 +6,7 @@ namespace MusicBrainz.Tools.Config
     {
         private static string _configFilePath = "appsettings.json";
 
-        private static IConfigurationRoot buildConfiguration()
+        private static IConfigurationRoot BuildConfiguration()
         {
             return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -19,11 +19,11 @@ namespace MusicBrainz.Tools.Config
             set
             {
                 _configFilePath = value;
-                Configuration = buildConfiguration();
+                Configuration = BuildConfiguration();
             }
         }
 
-        public static IConfigurationRoot Configuration { get; private set; } = buildConfiguration();
+        public static IConfigurationRoot Configuration { get; private set; } = BuildConfiguration();
 
         public static string GetConnectionString(string connectionStringName = "Default")
         {
@@ -37,6 +37,11 @@ namespace MusicBrainz.Tools.Config
         public static string GetImportFolder()
         {
             return Configuration.GetSection("TransferPaths") ["ImportFolderPath"];
+        }
+
+        public static string GetReportFolder()
+        {
+            return Configuration.GetSection("TransferPaths") ["ReportFolderPath"];
         }
 
         /// <summary>
